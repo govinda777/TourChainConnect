@@ -5,8 +5,13 @@
  * Este script processa os resultados dos testes e gera um relatório HTML
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Obter o diretório atual (equivalente a __dirname no CommonJS)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 function generateReport() {
   const reportsDir = path.join(process.cwd(), 'cypress/reports');
