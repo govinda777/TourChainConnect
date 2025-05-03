@@ -201,7 +201,7 @@ export default function CrowdfundingPage() {
         {/* Campaign Header */}
         <div className="mb-10">
           <h1 className="text-3xl sm:text-4xl font-bold mb-4">{campaign.title}</h1>
-          <p className="text-lg text-neutral-700 mb-6">{campaign.description}</p>
+          <p className="text-lg text-neutral-700 mb-6" data-cy="campaign-description">{campaign.description}</p>
           
           {/* Campaign Image with Web3 Indicators */}
           <div className={`w-full h-64 sm:h-80 rounded-xl ${campaign.featuredImage} mb-6 flex items-center justify-center text-white relative overflow-hidden`}>
@@ -240,15 +240,15 @@ export default function CrowdfundingPage() {
             
             <div className="grid grid-cols-4 gap-4 text-center">
               <div>
-                <div className="text-2xl font-bold">{percentComplete.toFixed(0)}%</div>
+                <div className="text-2xl font-bold" data-cy="campaign-percentage">{percentComplete.toFixed(0)}%</div>
                 <div className="text-sm text-neutral-500">Financiado</div>
               </div>
               <div>
-                <div className="text-2xl font-bold">{campaign.backers}</div>
+                <div className="text-2xl font-bold" data-cy="campaign-backers">{campaign.backers}</div>
                 <div className="text-sm text-neutral-500">Apoiadores</div>
               </div>
               <div>
-                <div className="text-2xl font-bold">{campaign.daysLeft}</div>
+                <div className="text-2xl font-bold" data-cy="campaign-days-left">{campaign.daysLeft}</div>
                 <div className="text-sm text-neutral-500">Dias restantes</div>
               </div>
               <div>
@@ -265,6 +265,7 @@ export default function CrowdfundingPage() {
             size="lg" 
             className="px-8 py-6 text-lg bg-primary hover:bg-primary-dark"
             onClick={() => handlePledge("100")}
+            data-cy="support-project-button"
           >
             <i className="ri-wallet-3-line mr-2"></i>
             Apoiar Este Projeto
