@@ -1,30 +1,35 @@
 # language: pt
 
-Funcionalidade: Financiamento Coletivo
-  Como um potencial investidor
-  Quero explorar a página de financiamento coletivo do TourChain
-  Para entender como posso apoiar o desenvolvimento da plataforma
+Funcionalidade: Financiamento coletivo do projeto
+  Como um usuário entusiasmado com o projeto TourChain
+  Eu quero apoiar financeiramente o desenvolvimento da plataforma
+  Para que ela possa ser lançada e beneficiar viagens corporativas
 
-  Cenário: Visualizar informações da campanha
+  Cenário: Visualizar detalhes da campanha de financiamento
     Dado que estou na página de financiamento coletivo
-    Então devo ver as informações da campanha
-    E devo ver a porcentagem de financiamento atual
+    Então devo ver o título da campanha
+    E devo ver o progresso da arrecadação
     E devo ver o número de apoiadores
-    E devo ver os dias restantes para o término da campanha
+    E devo ver as recompensas disponíveis
 
-  Cenário: Explorar níveis de recompensa
-    Dado que estou na página de financiamento coletivo
-    Quando eu rolo até a seção "Recompensas"
-    Então devo ver os diferentes níveis de recompensa disponíveis
-    E cada nível deve mostrar o valor da contribuição
-    E cada nível deve mostrar detalhes do smart contract associado
-
-  Cenário: Fazer uma contribuição
+  Cenário: Fazer uma contribuição anônima
     Dado que estou na página de financiamento coletivo
     Quando eu clico no botão "Apoiar Este Projeto"
-    Então devo ver a janela de contribuição
-    Quando eu preencho os detalhes da contribuição
-    E seleciono um nível de recompensa
-    E confirmo minha transação na carteira conectada
-    Então devo ver uma confirmação de contribuição bem-sucedida
-    E devo ver minha transação registrada na blockchain
+    Então devo ver o diálogo de apoio
+    Quando eu preencho o valor da contribuição
+    E eu marco a opção de contribuição anônima
+    E eu preencho o email "apoiador@exemplo.com"
+    E eu submeto o formulário
+    Então devo ver uma mensagem de agradecimento
+    E a contribuição deve aparecer como anônima na lista de apoiadores
+
+  Cenário: Escolher uma recompensa específica
+    Dado que estou na página de financiamento coletivo
+    Quando eu clico no botão "Selecionar" de uma recompensa
+    Então devo ver o diálogo de apoio com o valor pré-preenchido
+    Quando eu preencho meu nome como "João Silva"
+    E eu preencho o email "joao@exemplo.com"
+    E eu adiciono um comentário "Estou ansioso para ver o projeto completo!"
+    E eu submeto o formulário
+    Então devo ver uma mensagem de sucesso
+    E minha contribuição deve aparecer na lista de apoiadores

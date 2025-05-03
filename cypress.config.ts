@@ -23,7 +23,10 @@ async function setupNodeEvents(
               exclude: [/node_modules/],
               use: [
                 {
-                  loader: 'ts-loader',
+                  loader: 'babel-loader',
+                  options: {
+                    presets: ['@babel/preset-env', '@babel/preset-typescript'],
+                  },
                 },
               ],
             },
@@ -49,8 +52,10 @@ async function setupNodeEvents(
 export default defineConfig({
   e2e: {
     baseUrl: 'http://localhost:5000',
-    specPattern: 'cypress/e2e/**/*.feature',
+    specPattern: 'cypress/e2e/features/**/*.feature',
     supportFile: 'cypress/support/e2e.ts',
     setupNodeEvents,
   },
+  viewportWidth: 1280,
+  viewportHeight: 720,
 });
