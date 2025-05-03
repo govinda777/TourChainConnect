@@ -6,6 +6,7 @@ import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { apiRequest } from "@/lib/queryClient";
 import { Badge } from "@/components/ui/badge";
+import { useBlockchain, useTourCrowdfunding } from "@/lib/blockchain";
 import {
   Dialog, 
   DialogContent, 
@@ -125,22 +126,38 @@ export default function CrowdfundingPage() {
     setIsDialogOpen(true);
   };
 
-  // Simular conexão com carteira web3
-  const handleConnectWallet = () => {
+  // Conectar com carteira web3 usando o BlockchainProvider
+  const { connectWallet, walletAddress: blockchainWalletAddress, isWalletConnected } = useBlockchain();
+  
+  // Método para conectar carteira
+  const handleConnectWallet = async () => {
     setIsWalletConnecting(true);
     
-    // Simulação de conexão com metamask ou carteira similar
-    setTimeout(() => {
-      const mockWalletAddress = "0x" + Math.random().toString(16).substring(2, 14) + "...";
-      setWalletAddress(mockWalletAddress);
-      setIsWalletConnecting(false);
+    try {
+      await connectWallet();
       
       toast({
         title: "Carteira Conectada",
-        description: `Conectado com endereço ${mockWalletAddress}`,
+        description: `Conectado com sucesso à sua carteira Web3`,
       });
-    }, 1500);
+    } catch (error) {
+      console.error("Erro ao conectar carteira:", error);
+      toast({
+        title: "Erro ao conectar",
+        description: "Não foi possível conectar sua carteira. Verifique se você tem MetaMask instalado.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsWalletConnecting(false);
+    }
   };
+  
+  // Atualiza o estado local quando o endereço da carteira mudar no provider
+  useEffect(() => {
+    if (blockchainWalletAddress) {
+      setWalletAddress(blockchainWalletAddress);
+    }
+  }, [blockchainWalletAddress]);
 
   // Função para processar o apoio/contribuição
   const handleCompletePledge = async () => {
