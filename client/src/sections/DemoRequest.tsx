@@ -4,6 +4,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
+import { useLocation } from "wouter";
 import { 
   Form, 
   FormControl, 
@@ -15,13 +16,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
 
 const formSchema = z.object({
-  firstName: z.string().min(1, { message: "First name is required" }),
-  lastName: z.string().min(1, { message: "Last name is required" }),
-  email: z.string().email({ message: "Invalid email address" }),
-  company: z.string().min(1, { message: "Company name is required" }),
-  interest: z.string().min(1, { message: "Please select an interest" }),
+  firstName: z.string().min(1, { message: "Nome é obrigatório" }),
+  lastName: z.string().min(1, { message: "Sobrenome é obrigatório" }),
+  email: z.string().email({ message: "Email inválido" }),
+  company: z.string().min(1, { message: "Nome da empresa é obrigatório" }),
+  interest: z.string().min(1, { message: "Selecione uma opção" }),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -29,6 +31,7 @@ type FormValues = z.infer<typeof formSchema>;
 export default function DemoRequest() {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [, navigate] = useLocation();
   
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -49,19 +52,33 @@ export default function DemoRequest() {
       
       if (response.ok) {
         toast({
-          title: "Request Submitted!",
-          description: "We'll be in touch with you shortly to schedule your demo.",
+          title: "Solicitação Enviada!",
+          description: "Entraremos em contato em breve para agendar sua demonstração.",
           variant: "default",
         });
         
         form.reset();
+        
+        // Redirect to journey after successful form submission
+        setTimeout(() => {
+          // Choose journey based on interest
+          let journeyType = "default";
+          switch(data.interest) {
+            case "ai": journeyType = "optimization"; break;
+            case "wellness": journeyType = "wellness"; break;
+            case "sustainability": journeyType = "sustainability"; break;
+            case "blockchain": journeyType = "blockchain"; break;
+          }
+          
+          navigate(`/journey/${journeyType}`);
+        }, 1500);
       } else {
-        throw new Error("Failed to submit form");
+        throw new Error("Falha ao enviar formulário");
       }
     } catch (error) {
       toast({
-        title: "Submission Error",
-        description: "There was an error submitting your request. Please try again.",
+        title: "Erro no Envio",
+        description: "Ocorreu um erro ao enviar sua solicitação. Por favor, tente novamente.",
         variant: "destructive",
       });
     } finally {
@@ -73,13 +90,42 @@ export default function DemoRequest() {
     <section id="demo" className="py-20 bg-primary text-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-6">Ready to Transform Your Corporate Travel Experience?</h2>
+          <h2 className="text-3xl font-bold mb-6">Pronto para Transformar suas Viagens Corporativas?</h2>
           <p className="text-lg opacity-90 mb-8">
-            Join hundreds of forward-thinking companies that have revolutionized their approach to business travel with TourChain's innovative platform.
+            Junte-se a centenas de empresas visionárias que revolucionaram sua abordagem de viagens corporativas com a plataforma inovadora TourChain.
           </p>
           
+          <div className="grid md:grid-cols-3 gap-6 mb-10">
+            <Card className="bg-blue-600 border-blue-500 text-white p-6 hover:bg-blue-700 transition-colors cursor-pointer"
+                  onClick={() => navigate("/journey/wellness")}>
+              <div className="mb-4 text-3xl">
+                <i className="ri-mental-health-line"></i>
+              </div>
+              <h3 className="text-xl font-bold mb-2">Jornada de Bem-Estar</h3>
+              <p className="text-sm">Descubra como melhorar a qualidade de vida dos seus viajantes</p>
+            </Card>
+            
+            <Card className="bg-green-600 border-green-500 text-white p-6 hover:bg-green-700 transition-colors cursor-pointer"
+                  onClick={() => navigate("/journey/sustainability")}>
+              <div className="mb-4 text-3xl">
+                <i className="ri-plant-line"></i>
+              </div>
+              <h3 className="text-xl font-bold mb-2">Jornada de Sustentabilidade</h3>
+              <p className="text-sm">Veja como nossa solução ajuda a reduzir a pegada de carbono</p>
+            </Card>
+            
+            <Card className="bg-amber-600 border-amber-500 text-white p-6 hover:bg-amber-700 transition-colors cursor-pointer"
+                  onClick={() => navigate("/journey/optimization")}>
+              <div className="mb-4 text-3xl">
+                <i className="ri-funds-line"></i>
+              </div>
+              <h3 className="text-xl font-bold mb-2">Jornada de Economia</h3>
+              <p className="text-sm">Conheça nossa IA para redução de custos em até 30%</p>
+            </Card>
+          </div>
+          
           <div className="bg-white rounded-xl shadow-lg p-8">
-            <h3 className="text-primary text-2xl font-bold mb-6">Request a Personalized Demo</h3>
+            <h3 className="text-primary text-2xl font-bold mb-6">Solicite uma Demonstração Personalizada</h3>
             
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -88,7 +134,7 @@ export default function DemoRequest() {
                   name="firstName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-neutral-700">First Name</FormLabel>
+                      <FormLabel className="text-neutral-700">Nome</FormLabel>
                       <FormControl>
                         <Input {...field} className="w-full px-4 py-2 border border-neutral-300" />
                       </FormControl>
@@ -102,7 +148,7 @@ export default function DemoRequest() {
                   name="lastName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-neutral-700">Last Name</FormLabel>
+                      <FormLabel className="text-neutral-700">Sobrenome</FormLabel>
                       <FormControl>
                         <Input {...field} className="w-full px-4 py-2 border border-neutral-300" />
                       </FormControl>
@@ -116,7 +162,7 @@ export default function DemoRequest() {
                   name="email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-neutral-700">Business Email</FormLabel>
+                      <FormLabel className="text-neutral-700">Email Corporativo</FormLabel>
                       <FormControl>
                         <Input {...field} type="email" className="w-full px-4 py-2 border border-neutral-300" />
                       </FormControl>
@@ -130,7 +176,7 @@ export default function DemoRequest() {
                   name="company"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-neutral-700">Company</FormLabel>
+                      <FormLabel className="text-neutral-700">Empresa</FormLabel>
                       <FormControl>
                         <Input {...field} className="w-full px-4 py-2 border border-neutral-300" />
                       </FormControl>
@@ -144,19 +190,19 @@ export default function DemoRequest() {
                   name="interest"
                   render={({ field }) => (
                     <FormItem className="md:col-span-2">
-                      <FormLabel className="text-neutral-700">What interests you most?</FormLabel>
+                      <FormLabel className="text-neutral-700">O que mais lhe interessa?</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger className="w-full px-4 py-2 border border-neutral-300">
-                            <SelectValue placeholder="Select an option" />
+                            <SelectValue placeholder="Selecione uma opção" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="complete">Complete TourChain Platform</SelectItem>
-                          <SelectItem value="ai">AI Cost Optimization</SelectItem>
-                          <SelectItem value="wellness">Wellness Program</SelectItem>
-                          <SelectItem value="sustainability">Sustainability Initiatives</SelectItem>
-                          <SelectItem value="safety">International Travel Safety</SelectItem>
+                          <SelectItem value="complete">Plataforma TourChain Completa</SelectItem>
+                          <SelectItem value="ai">Otimização de Custos com IA</SelectItem>
+                          <SelectItem value="wellness">Programa de Bem-Estar</SelectItem>
+                          <SelectItem value="sustainability">Iniciativas de Sustentabilidade</SelectItem>
+                          <SelectItem value="blockchain">Tecnologia Blockchain</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -170,14 +216,28 @@ export default function DemoRequest() {
                     className="w-full py-3 px-4 bg-primary text-white rounded-md hover:bg-primary-dark transition"
                     disabled={isSubmitting}
                   >
-                    {isSubmitting ? "Submitting..." : "Schedule My Demo"}
+                    {isSubmitting ? "Enviando..." : "Agendar Minha Demonstração"}
                   </Button>
                   <p className="text-xs text-neutral-500 mt-2">
-                    By submitting this form, you agree to our <a href="#" className="underline">privacy policy</a>.
+                    Ao enviar este formulário, você concorda com nossa <a href="#" className="underline">política de privacidade</a>.
                   </p>
                 </div>
               </form>
             </Form>
+          </div>
+          
+          <div className="mt-12">
+            <Button 
+              onClick={() => navigate("/crowdfunding")}
+              variant="outline" 
+              size="lg"
+              className="border-white text-white hover:bg-white hover:text-primary"
+            >
+              Apoiar o Projeto
+            </Button>
+            <p className="text-sm mt-2 opacity-80">
+              Contribua diretamente para o desenvolvimento do TourChain
+            </p>
           </div>
         </div>
       </div>
