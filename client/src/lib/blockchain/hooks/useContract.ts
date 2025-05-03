@@ -109,6 +109,7 @@ export function useContract(address: string, abi: any) {
           
           // Determinar o tipo de contrato para fornecer o mock adequado
           const contractType = getContractTypeFromAddress(address, networkName);
+          console.log(`Tipo de contrato detectado para mock: ${contractType}`);
           
           // Criar handlers específicos para este tipo de contrato
           const mockHandlers = createMockContractHandlers(contractType);
@@ -132,11 +133,13 @@ export function useContract(address: string, abi: any) {
           
           setContract(mockContract as unknown as ethers.Contract);
           setIsLoading(false);
+          console.log(`Mock de contrato criado com sucesso para ${contractType}`);
           return;
         }
         
         // Verificar se a carteira está conectada
         if (!walletAddress) {
+          console.log("Carteira não está conectada, não é possível criar instância do contrato");
           setContract(null);
           setIsLoading(false);
           return;
@@ -144,28 +147,45 @@ export function useContract(address: string, abi: any) {
 
         // Validar o endereço do contrato
         if (!ethers.isAddress(address)) {
+          console.error(`Endereço de contrato inválido: ${address}`);
           throw new Error(`Endereço de contrato inválido: ${address}`);
         }
 
+        console.log(`Inicializando contrato real em ${address} na rede ${networkName}`);
+        
         // Criar provider e instância do contrato
         if (typeof window !== 'undefined' && window.ethereum) {
-          const provider = new ethers.BrowserProvider(window.ethereum);
-          
-          // Obter o signer para transações assinadas
-          let contractInstance;
-          
           try {
-            const signer = await provider.getSigner();
-            // Criar instância do contrato conectada ao signer
-            contractInstance = new ethers.Contract(address, abi, signer);
-            console.log(`Contrato ${address} conectado com signer`);
-          } catch (signerError) {
-            // Se não conseguirmos um signer, usamos só o provider (somente leitura)
-            console.warn(`Não foi possível obter signer, usando provider somente leitura: ${signerError}`);
-            contractInstance = new ethers.Contract(address, abi, provider);
+            const provider = new ethers.BrowserProvider(window.ethereum);
+            console.log(`Provider criado para rede ${networkName}`);
+            
+            // Obter o signer para transações assinadas
+            let contractInstance;
+            
+            try {
+              console.log(`Obtendo signer para ${walletAddress}...`);
+              const signer = await provider.getSigner();
+              console.log(`Signer obtido: ${await signer.getAddress()}`);
+              
+              // Criar instância do contrato conectada ao signer
+              contractInstance = new ethers.Contract(address, abi, signer);
+              console.log(`Contrato ${address} conectado com signer`);
+            } catch (signerError) {
+              // Se não conseguirmos um signer, usamos só o provider (somente leitura)
+              console.warn(`Não foi possível obter signer, usando provider somente leitura: ${signerError}`);
+              contractInstance = new ethers.Contract(address, abi, provider);
+              console.log(`Contrato ${address} conectado somente leitura`);
+            }
+            
+            setContract(contractInstance);
+            console.log(`Instância do contrato criada com sucesso para ${address}`);
+          } catch (providerError) {
+            console.error(`Erro ao criar provider ou contrato: ${providerError}`);
+            throw providerError;
           }
-          
-          setContract(contractInstance);
+        } else {
+          console.error("window.ethereum não está disponível");
+          throw new Error("Provedor Ethereum não disponível");
         }
       } catch (err) {
         console.error("Erro ao inicializar contrato:", err);
