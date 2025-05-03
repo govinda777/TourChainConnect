@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2 } from "lucide-react";
+import TokenBalanceDisplay from "@/components/TokenBalanceDisplay";
 
 export default function CrowdfundingPage() {
   const { toast } = useToast();
@@ -33,6 +34,7 @@ export default function CrowdfundingPage() {
   const [isPledgeSubmitting, setIsPledgeSubmitting] = useState(false);
   const [tokenPrice, setTokenPrice] = useState(1); // Preço inicial de 1 dólar
   const [tokensPurchased, setTokensPurchased] = useState<Array<{wallet: string, tokens: number, price: number}>>([]);
+  const [lastContribution, setLastContribution] = useState<string>("");
   const [, navigate] = useLocation();
   
   // Definir interface para os tipos de recompensa
@@ -189,12 +191,16 @@ export default function CrowdfundingPage() {
               price: tokenPrice
             }]);
             setTokenPrice(prev => prev + 1); // Aumenta o preço em 1 dólar
+            setLastContribution("100");
             
             toast({
               title: "Compra de Tokens Confirmada!",
               description: `Você adquiriu 100 ${campaign.tokenSymbol} tokens por $${tokenPrice}! O próximo preço será $${tokenPrice + 1}.`,
             });
           } else {
+            // Definir a última contribuição para exibir no TokenBalanceDisplay
+            setLastContribution(pledgeAmount);
+            
             toast({
               title: "Transação Confirmada",
               description: `Você recebeu ${parseInt(pledgeAmount) * 2} ${campaign.tokenSymbol} tokens em sua carteira!`,
