@@ -13,6 +13,8 @@ interface TokenBalanceDisplayProps {
   onContribution?: (amount: string) => void;
   contributionAmount?: string;
   showDebugInfo?: boolean;
+  networkOverride?: string;        // Para exibir rede específica
+  addressOverride?: string;        // Para exibir endereço específico
 }
 
 /**
@@ -22,7 +24,9 @@ export default function TokenBalanceDisplay({
   showConnectButton = true,
   onContribution,
   contributionAmount,
-  showDebugInfo = true
+  showDebugInfo = true,
+  networkOverride,
+  addressOverride
 }: TokenBalanceDisplayProps) {
   const { 
     isWalletConnected, 
@@ -46,8 +50,9 @@ export default function TokenBalanceDisplay({
   const { toast } = useToast();
   const [isDebugExpanded, setIsDebugExpanded] = useState(false);
 
-  // Obter os endereços dos contratos para a rede atual
-  const contractAddresses = getAddressesForNetwork(networkName);
+  // Obter os endereços dos contratos para a rede atual ou usar override
+  const displayNetwork = networkOverride || networkName;
+  const contractAddresses = getAddressesForNetwork(displayNetwork);
 
   // Efeito para atualizar o saldo quando houver uma contribuição
   useEffect(() => {
@@ -149,8 +154,9 @@ export default function TokenBalanceDisplay({
             </div>
             
             <div className="mt-2 text-sm text-muted-foreground">
-              {walletAddress && (
-                <span>Carteira: {`${walletAddress.substring(0, 6)}...${walletAddress.substring(walletAddress.length - 4)}`}</span>
+              {(addressOverride || walletAddress) && (
+                <span>Carteira: {addressOverride || 
+                  (walletAddress ? `${walletAddress.substring(0, 6)}...${walletAddress.substring(walletAddress.length - 4)}` : '-')}</span>
               )}
             </div>
             
@@ -207,7 +213,7 @@ export default function TokenBalanceDisplay({
                       
                       <div>Rede:</div>
                       <div className="text-right">
-                        <Badge variant="secondary">{networkName}</Badge>
+                        <Badge variant="secondary">{displayNetwork}</Badge>
                       </div>
                       
                       <div>TourToken:</div>
