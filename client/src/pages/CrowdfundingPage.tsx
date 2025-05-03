@@ -234,12 +234,16 @@ export default function CrowdfundingPage() {
             price: tokenPrice
           }]);
           setTokenPrice(prev => prev + 1); // Aumenta o preço em 1 dólar
+          setLastContribution("100");
           
           toast({
             title: "Compra de Tokens Confirmada!",
             description: `Você adquiriu 100 ${campaign.tokenSymbol} tokens por $${tokenPrice}! O próximo preço será $${tokenPrice + 1}.`,
           });
         } else {
+          // Definir a última contribuição para exibir no TokenBalanceDisplay
+          setLastContribution(pledgeAmount);
+          
           toast({
             title: "Apoio registrado com sucesso!",
             description: `Agradecemos seu apoio de R$ ${pledgeAmount}. Você receberá mais informações por email.`,
@@ -325,6 +329,14 @@ export default function CrowdfundingPage() {
                 <div className="text-sm text-neutral-500">Token</div>
               </div>
             </div>
+          </div>
+          
+          {/* Token Balance Display */}
+          <div className="mt-6">
+            <TokenBalanceDisplay 
+              contributionAmount={lastContribution}
+              onContribution={() => setLastContribution("")}
+            />
           </div>
         </div>
         
