@@ -1,0 +1,25 @@
+Warning: React does not recognize the `%s` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `%s` instead. If you accidentally passed it from a parent component, remove it from the DOM element.%s indicatorClassName indicatorclassname 
+    at div
+    at https://6dc72bfd-b240-495e-ab8e-9d7efd537386-00-25dcf9bd0jkrs.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-BOL2CCOG.js?v=4b45555d:42:13
+    at Provider (https://6dc72bfd-b240-495e-ab8e-9d7efd537386-00-25dcf9bd0jkrs.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-OXZDJRWN.js?v=4b45555d:38:15)
+    at https://6dc72bfd-b240-495e-ab8e-9d7efd537386-00-25dcf9bd0jkrs.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-progress.js?v=4b45555d:30:7
+    at _c (https://6dc72bfd-b240-495e-ab8e-9d7efd537386-00-25dcf9bd0jkrs.spock.replit.dev/src/components/ui/progress.tsx:22:11)
+    at div
+    at div
+    at div
+    at div
+    at div
+    at div
+    at section
+    at WellnessProgram
+    at main
+    at HomePage (https://6dc72bfd-b240-495e-ab8e-9d7efd537386-00-25dcf9bd0jkrs.spock.replit.dev/src/pages/HomePage.tsx:33:24)
+    at Route (https://6dc72bfd-b240-495e-ab8e-9d7efd537386-00-25dcf9bd0jkrs.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=4b45555d:323:16)
+    at Switch (https://6dc72bfd-b240-495e-ab8e-9d7efd537386-00-25dcf9bd0jkrs.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/wouter.js?v=4b45555d:379:17)
+    at Router (https://6dc72bfd-b240-495e-ab8e-9d7efd537386-00-25dcf9bd0jkrs.spock.replit.dev/src/App.tsx?v=LXohGLby4C2iCm0O5S9ks:32:22)
+    at Provider (https://6dc72bfd-b240-495e-ab8e-9d7efd537386-00-25dcf9bd0jkrs.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/chunk-OXZDJRWN.js?v=4b45555d:38:15)
+    at TooltipProvider (https://6dc72bfd-b240-495e-ab8e-9d7efd537386-00-25dcf9bd0jkrs.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@radix-ui_react-tooltip.js?v=4b45555d:61:5)
+    at QueryClientProvider (https://6dc72bfd-b240-495e-ab8e-9d7efd537386-00-25dcf9bd0jkrs.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=4b45555d:2805:3)
+    at App
+    at BlockchainProvider (https://6dc72bfd-b240-495e-ab8e-9d7efd537386-00-25dcf9bd0jkrs.spock.replit.dev/src/lib/blockchain/providers/BlockchainProvider.tsx?v=LXohGLby4C2iCm0O5S9ks:39:38)
+    at QueryClientProvider (https://6dc72bfd-b240-495e-ab8e-9d7efd537386-00-25dcf9bd0jkrs.spock.replit.dev/@fs/home/runner/workspace/node_modules/.vite/deps/@tanstack_react-query.js?v=4b45555d:2805:3)
