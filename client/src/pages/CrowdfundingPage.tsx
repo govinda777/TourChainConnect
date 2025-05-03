@@ -235,7 +235,7 @@ export default function CrowdfundingPage() {
                 <span className="font-semibold">R$ {campaign.raised.toLocaleString()}</span>
                 <span className="text-neutral-500">Meta: R$ {campaign.goal.toLocaleString()}</span>
               </div>
-              <Progress value={percentComplete} className="h-2" />
+              <Progress value={percentComplete} className="h-2 bg-neutral-100" />
             </div>
             
             <div className="grid grid-cols-4 gap-4 text-center">
