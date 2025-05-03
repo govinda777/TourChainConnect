@@ -35,6 +35,19 @@ export default function CrowdfundingPage() {
   const [tokensPurchased, setTokensPurchased] = useState<Array<{wallet: string, tokens: number, price: number}>>([]);
   const [, navigate] = useLocation();
   
+  // Definir interface para os tipos de recompensa
+  interface RewardTier {
+    id: string;
+    title: string;
+    amount: number;
+    tokenAmount: number;
+    description: string;
+    claimed: number;
+    limit: number;
+    contractId: string;
+    isDynamic?: boolean;
+  }
+
   // Obter email da sessionStorage se disponível
   useEffect(() => {
     const storedEmail = sessionStorage.getItem('userEmail');
@@ -57,7 +70,21 @@ export default function CrowdfundingPage() {
     featuredImage: "bg-gradient-to-r from-primary to-secondary"
   };
 
-  const rewardTiers = [
+  // Recompensa dinâmica (1 dólar para 100 tokens, aumentando 1 dólar a cada venda)
+  const dynamicReward: RewardTier = {
+    id: "dynamic-tokens",
+    title: "Tokens Dinâmicos",
+    amount: tokenPrice,
+    tokenAmount: 100,
+    description: "Compre 100 tokens por um preço que aumenta US$ 1 a cada compra. Quanto mais cedo você comprar, mais econômico será!",
+    claimed: tokensPurchased.length,
+    limit: 1000,
+    contractId: "0xDYN",
+    isDynamic: true
+  };
+  
+  const rewardTiers: RewardTier[] = [
+    dynamicReward,
     {
       id: "early-access",
       title: "Acesso Antecipado",
@@ -140,6 +167,9 @@ export default function CrowdfundingPage() {
       // Em um cenário web3 real, aqui chamaríamos funções de um smart contract
       // Para nossa demonstração, usaremos a API que criamos com armazenamento em memória
       
+      // Verificar se é uma compra do pacote de tokens dinâmicos
+      const isDynamicTokenPurchase = selectedReward === "dynamic-tokens";
+      
       if (paymentTab === "crypto") {
         // Simulação de interação com smart contract
         await new Promise(resolve => setTimeout(resolve, 2000));
@@ -151,10 +181,25 @@ export default function CrowdfundingPage() {
         
         // Simular confirmação da blockchain após alguns segundos
         setTimeout(() => {
-          toast({
-            title: "Transação Confirmada",
-            description: `Você recebeu ${parseInt(pledgeAmount) * 2} ${campaign.tokenSymbol} tokens em sua carteira!`,
-          });
+          // Se for uma compra de tokens dinâmicos, atualize o preço e registre a compra
+          if (isDynamicTokenPurchase) {
+            setTokensPurchased(prev => [...prev, {
+              wallet: walletAddress,
+              tokens: 100,
+              price: tokenPrice
+            }]);
+            setTokenPrice(prev => prev + 1); // Aumenta o preço em 1 dólar
+            
+            toast({
+              title: "Compra de Tokens Confirmada!",
+              description: `Você adquiriu 100 ${campaign.tokenSymbol} tokens por $${tokenPrice}! O próximo preço será $${tokenPrice + 1}.`,
+            });
+          } else {
+            toast({
+              title: "Transação Confirmada",
+              description: `Você recebeu ${parseInt(pledgeAmount) * 2} ${campaign.tokenSymbol} tokens em sua carteira!`,
+            });
+          }
         }, 3000);
       } else {
         // Para pagamento tradicional, usamos nossa API
@@ -175,10 +220,25 @@ export default function CrowdfundingPage() {
           sessionStorage.setItem('userEmail', email);
         }
         
-        toast({
-          title: "Apoio registrado com sucesso!",
-          description: `Agradecemos seu apoio de R$ ${pledgeAmount}. Você receberá mais informações por email.`,
-        });
+        // Se for uma compra de tokens dinâmicos, atualize o preço e registre a compra
+        if (isDynamicTokenPurchase) {
+          setTokensPurchased(prev => [...prev, {
+            wallet: name || email, // Usar nome ou email como identificador
+            tokens: 100,
+            price: tokenPrice
+          }]);
+          setTokenPrice(prev => prev + 1); // Aumenta o preço em 1 dólar
+          
+          toast({
+            title: "Compra de Tokens Confirmada!",
+            description: `Você adquiriu 100 ${campaign.tokenSymbol} tokens por $${tokenPrice}! O próximo preço será $${tokenPrice + 1}.`,
+          });
+        } else {
+          toast({
+            title: "Apoio registrado com sucesso!",
+            description: `Agradecemos seu apoio de R$ ${pledgeAmount}. Você receberá mais informações por email.`,
+          });
+        }
       }
       
       // Fechar o dialog independente do método usado
@@ -276,6 +336,82 @@ export default function CrowdfundingPage() {
           <p className="mt-2 text-neutral-500">Junte-se a outros {campaign.backers} apoiadores</p>
         </div>
         
+        {/* Token Purchase History and Current Price */}
+        {rewardTiers[0].isDynamic && (
+          <div className="mb-12">
+            <h2 className="text-2xl font-bold mb-4">Tokens Dinâmicos</h2>
+            <Card className="p-6 border-2 border-green-100 bg-green-50">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-xl font-bold flex items-center">
+                    <i className="ri-coin-line mr-2 text-yellow-500"></i>
+                    100 {campaign.tokenSymbol} Tokens
+                  </h3>
+                  <p className="text-neutral-700 my-2">
+                    Preço inicial de $1, aumentando $1 a cada compra. Compre agora antes que fique mais caro!
+                  </p>
+                </div>
+                <div className="bg-white rounded-lg p-3 shadow-sm border border-green-200 flex items-center mt-2 md:mt-0">
+                  <div className="text-right">
+                    <div className="text-xs text-gray-500">Preço atual</div>
+                    <div className="text-3xl font-bold text-green-600">${tokenPrice}</div>
+                    <Badge variant="outline" className="mt-1">Próximo: ${tokenPrice + 1}</Badge>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="rounded-md bg-white p-4 border border-green-100">
+                <div className="flex justify-between items-center mb-2">
+                  <div className="font-semibold">Histórico de Compras</div>
+                  <div className="text-xs text-gray-500">{tokensPurchased.length} total</div>
+                </div>
+                
+                {tokensPurchased.length > 0 ? (
+                  <div className="max-h-40 overflow-y-auto">
+                    <table className="w-full text-sm">
+                      <thead className="text-xs text-gray-500 border-b">
+                        <tr>
+                          <th className="text-left py-2">Comprador</th>
+                          <th className="text-center py-2">Tokens</th>
+                          <th className="text-right py-2">Preço Pago</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {tokensPurchased.map((purchase, idx) => (
+                          <tr key={idx} className="border-b border-gray-50">
+                            <td className="py-2 text-left font-mono text-xs">
+                              {typeof purchase.wallet === 'string' && purchase.wallet.includes('@') 
+                                ? purchase.wallet.substring(0, 3) + '***' + purchase.wallet.substring(purchase.wallet.indexOf('@'))
+                                : purchase.wallet.substring(0, 6) + '...'}
+                            </td>
+                            <td className="py-2 text-center">{purchase.tokens}</td>
+                            <td className="py-2 text-right">${purchase.price}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-gray-400">
+                    <i className="ri-shopping-bag-line block text-2xl mb-2"></i>
+                    Seja o primeiro a comprar tokens!
+                  </div>
+                )}
+              </div>
+              
+              <div className="mt-4">
+                <Button 
+                  className="w-full bg-green-600 hover:bg-green-700"
+                  onClick={() => handlePledge(tokenPrice.toString(), dynamicReward.id)}
+                >
+                  <i className="ri-shopping-cart-2-line mr-2"></i>
+                  Comprar 100 Tokens por ${tokenPrice}
+                </Button>
+              </div>
+            </Card>
+          </div>
+        )}
+        
         {/* Project Description */}
         <div className="mb-12">
           <h2 className="text-2xl font-bold mb-4">Sobre o Projeto</h2>
@@ -315,7 +451,7 @@ export default function CrowdfundingPage() {
         <div className="mb-12">
           <h2 className="text-2xl font-bold mb-4">Recompensas</h2>
           <div className="space-y-4">
-            {rewardTiers.map(tier => (
+            {rewardTiers.filter(tier => !tier.isDynamic).map(tier => (
               <Card key={tier.id} className="p-6 border-2 border-primary/10 hover:border-primary/30 transition-colors">
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="text-xl font-bold">{tier.title}</h3>
