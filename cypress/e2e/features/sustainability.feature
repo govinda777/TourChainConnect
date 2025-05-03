@@ -1,27 +1,28 @@
-# language: pt
+Feature: Sustentabilidade Corporativa
+  Como uma empresa focada em sustentabilidade
+  Eu quero acompanhar a pegada de carbono das viagens
+  Para reduzir meu impacto ambiental
 
-Funcionalidade: Calculadora de Sustentabilidade
-  Como um gestor de viagens corporativas
-  Eu quero calcular a pegada de carbono das viagens da minha empresa
-  Para compensar o impacto ambiental e obter a certificação "TourChain Sustentável"
+  @sustainability @metrics
+  Scenario: Visualização da pegada de carbono da empresa
+    Given que estou logado como gerente de sustentabilidade
+    When eu acesso o dashboard de sustentabilidade
+    Then eu devo ver o total de emissões de carbono da empresa
+    And eu devo ver um gráfico de tendência das emissões ao longo do tempo
 
-  Cenário: Calcular pegada de carbono de viagens aéreas
-    Dado que estou na página da calculadora de sustentabilidade
-    Quando eu preencho o número de voos como "10"
-    E eu preencho a distância média como "5000"
-    E eu seleciono a distribuição de classes como "70% Econômica, 20% Executiva, 10% Primeira Classe"
-    E eu clico em calcular
-    Então devo ver o resultado da pegada de carbono
-    E devo ver a equivalência em carros por ano
-    E devo ver o custo estimado de compensação
+  @sustainability @offsets
+  Scenario: Aquisição de compensações de carbono
+    Given que estou logado como gerente de sustentabilidade
+    And existem "500" kg de emissões de CO2 não compensadas
+    When eu inicio o processo de compensação de carbono
+    And eu seleciono um projeto de reflorestamento
+    And eu confirmo a compra de créditos de carbono
+    Then eu devo ver uma confirmação da transação na blockchain
+    And o balanço de emissões não compensadas deve ser "0" kg
 
-  Cenário: Obter certificação de sustentabilidade
-    Dado que estou na página da calculadora de sustentabilidade
-    Quando eu calculo a pegada de carbono da minha empresa
-    E eu clico em "Compensar Emissões"
-    Então devo ver o formulário de compensação
-    Quando eu preencho os dados da empresa
-    E eu seleciono o projeto de compensação
-    E eu confirmo o pagamento
-    Então devo ver a confirmação da certificação "TourChain Sustentável"
-    E devo poder baixar o certificado em PDF
+  @sustainability @reporting
+  Scenario: Geração de relatório de sustentabilidade
+    Given que estou logado como gerente de sustentabilidade
+    When eu solicito um relatório de sustentabilidade para o último trimestre
+    Then eu devo receber um documento com o resumo das emissões
+    And o relatório deve incluir gráficos comparativos com trimestres anteriores

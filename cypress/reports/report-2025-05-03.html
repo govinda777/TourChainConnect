@@ -1,0 +1,89 @@
+
+    <!DOCTYPE html>
+    <html lang="pt-br">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Relatório de Testes E2E - 2025-05-03</title>
+      <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; line-height: 1.6; max-width: 1200px; margin: 0 auto; padding: 20px; color: #333; }
+        h1, h2 { color: #2c3e50; }
+        .summary { background-color: #f8f9fa; border-radius: 4px; padding: 15px; margin-bottom: 20px; }
+        .summary-item { display: inline-block; margin-right: 30px; }
+        .summary-label { font-weight: bold; margin-right: 5px; }
+        .progress-bar { height: 20px; background-color: #e9ecef; border-radius: 4px; margin-bottom: 20px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background-color: #4CAF50; transition: width 0.3s ease; }
+        .progress-bar-text { text-align: center; margin-top: 5px; font-weight: bold; }
+        .features { display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)); gap: 20px; }
+        .feature-card { border: 1px solid #dee2e6; border-radius: 4px; padding: 15px; background-color: white; }
+        .feature-header { display: flex; justify-content: space-between; align-items: center; }
+        .feature-title { margin: 0; font-size: 18px; }
+        .feature-result { padding: 3px 8px; border-radius: 3px; font-size: 14px; font-weight: bold; }
+        .passed { background-color: #d4edda; color: #155724; }
+        .failed { background-color: #f8d7da; color: #721c24; }
+        .mixed { background-color: #fff3cd; color: #856404; }
+        .feature-stats { margin-top: 10px; font-size: 14px; color: #6c757d; }
+      </style>
+    </head>
+    <body>
+      <h1>Relatório de Testes E2E</h1>
+      <p>Data do relatório: 2025-05-03</p>
+      
+      <div class="summary">
+        <div class="summary-item"><span class="summary-label">Total de Testes:</span> 5</div>
+        <div class="summary-item"><span class="summary-label">Testes Passados:</span> 4</div>
+        <div class="summary-item"><span class="summary-label">Testes Falhos:</span> 1</div>
+        <div class="summary-item"><span class="summary-label">Taxa de Sucesso:</span> 80%</div>
+      </div>
+      
+      <div class="progress-bar">
+        <div class="progress-bar-fill" style="width: 80%"></div>
+      </div>
+      <div class="progress-bar-text">80% dos testes passaram</div>
+      
+      <h2>Resultados por Feature</h2>
+      <div class="features">
+    
+        <div class="feature-card">
+          <div class="feature-header">
+            <h3 class="feature-title">features/sustainability.feature</h3>
+            <span class="feature-result failed">FALHOU</span>
+          </div>
+          <div class="feature-stats">
+            <div>Total: 3 testes</div>
+            <div>Passados: 2 testes</div>
+            <div>Falhos: 1 testes</div>
+            <div>Duração: 2 segundos</div>
+          </div>
+        </div>
+      
+        <div class="feature-card">
+          <div class="feature-header">
+            <h3 class="feature-title">features/token-balance.feature</h3>
+            <span class="feature-result passed">PASSOU</span>
+          </div>
+          <div class="feature-stats">
+            <div>Total: 2 testes</div>
+            <div>Passados: 2 testes</div>
+            <div>Falhos: 0 testes</div>
+            <div>Duração: 2 segundos</div>
+          </div>
+        </div>
+      
+        <div class="feature-card">
+          <div class="feature-header">
+            <h3 class="feature-title">summary</h3>
+            <span class="feature-result mixed">MISTO</span>
+          </div>
+          <div class="feature-stats">
+            <div>Total: 0 testes</div>
+            <div>Passados: 0 testes</div>
+            <div>Falhos: 0 testes</div>
+            <div>Duração: 0 segundos</div>
+          </div>
+        </div>
+      
+      </div>
+    </body>
+    </html>
+    
