@@ -1,14 +1,18 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import TokenBalanceDisplay from '../components/TokenBalanceDisplay';
 
-// Mock os hooks necessários
-jest.mock('@/lib/blockchain', () => ({
-  useTourTokenBalance: () => ({
+// Mock dos hooks blockchain
+jest.mock('@/lib/blockchain/providers/BlockchainProvider', () => {
+  return require('../__tests__/setup/test-providers');
+});
+
+jest.mock('@/lib/blockchain/hooks/useTourTokenBalance', () => {
+  return () => ({
     data: '1000.00',
     isLoading: false,
     updateBalance: jest.fn()
-  })
-}));
+  });
+});
 
 describe('TokenBalanceDisplay Component', () => {
   it('renders token balance correctly', () => {

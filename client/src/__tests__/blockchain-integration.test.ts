@@ -34,7 +34,8 @@ describe('Blockchain Integration Functions', () => {
       const address = '0x1234567890123456789012345678901234567890';
       expect(formatAddress(address)).toBe('0x1234...7890');
       expect(formatAddress(address, 4, 4)).toBe('0x12...7890');
-      expect(formatAddress(address, 10, 8)).toBe('0x1234567890...12345678');
+      // A implementação atual trunca para o tamanho prefixLength que foi passado
+      expect(formatAddress(address, 10, 8)).toBe('0x12345678...34567890');
     });
 
     it('should handle empty addresses', () => {
