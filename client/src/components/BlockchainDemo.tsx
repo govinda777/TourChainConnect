@@ -91,21 +91,21 @@ export default function BlockchainDemo() {
               
               <div className="flex items-center justify-between">
                 <span className="text-indigo-700">Blockchain:</span>
-                <Badge variant={isBlockchainReady ? "success" : "destructive"}>
+                <Badge variant={isBlockchainReady ? "default" : "destructive"} className={isBlockchainReady ? "bg-green-500" : ""}>
                   {isBlockchainReady ? 'Pronta' : 'Não Inicializada'}
                 </Badge>
               </div>
               
               <div className="flex items-center justify-between">
                 <span className="text-indigo-700">Contratos:</span>
-                <Badge variant={areContractsReady ? "success" : "destructive"}>
+                <Badge variant={areContractsReady ? "default" : "destructive"} className={areContractsReady ? "bg-green-500" : ""}>
                   {areContractsReady ? 'Prontos' : 'Não Inicializados'}
                 </Badge>
               </div>
               
               <div className="flex items-center justify-between">
                 <span className="text-indigo-700">Carteira:</span>
-                <Badge variant={isWalletConnected ? "success" : "destructive"}>
+                <Badge variant={isWalletConnected ? "default" : "destructive"} className={isWalletConnected ? "bg-green-500" : ""}>
                   {isWalletConnected ? 'Conectada' : 'Desconectada'}
                 </Badge>
               </div>

@@ -21,6 +21,7 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Loader2 } from "lucide-react";
 import TokenBalanceDisplay from "@/components/TokenBalanceDisplay";
+import BlockchainDemo from "@/components/BlockchainDemo";
 
 export default function CrowdfundingPage() {
   const { toast } = useToast();
@@ -397,6 +398,11 @@ export default function CrowdfundingPage() {
                 <div className="text-sm text-neutral-500">Token</div>
               </div>
             </div>
+          </div>
+          
+          {/* Blockchain Integration Demo */}
+          <div className="mt-6">
+            <BlockchainDemo />
           </div>
           
           {/* Token Balance Display */}
