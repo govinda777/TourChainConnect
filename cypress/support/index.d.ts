@@ -1,7 +1,9 @@
 // Type definitions for Cypress commands
 /// <reference types="cypress" />
 
+// Esta é a forma correta de estender tipos globais do Cypress
 declare namespace Cypress {
+  // Estenda a interface AUTWindow para incluir ethereum
   interface AUTWindow {
     ethereum?: any;
   }

@@ -5,9 +5,15 @@
  * Este script inicia o servidor, executa os testes e encerra o servidor
  */
 
-const { spawn, exec } = require('child_process');
-const path = require('path');
-const fs = require('fs');
+import { spawn, exec } from 'child_process';
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+import http from 'http';
+
+// Obter o diretório atual (equivalente a __dirname no CommonJS)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Função para garantir que o diretório de logs exista
 function ensureLogDir() {
@@ -56,7 +62,6 @@ function waitForServer(url, timeout = 60000) {
     const startTime = Date.now();
     
     const checkServer = () => {
-      const http = require('http');
       const req = http.get(url, (res) => {
         if (res.statusCode >= 200 && res.statusCode < 400) {
           console.log(`Servidor está pronto em ${url}`);
