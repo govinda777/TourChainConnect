@@ -9,13 +9,44 @@ jest.mock('wouter', () => ({
 
 // Mock apiRequest
 jest.mock('@/lib/queryClient', () => ({
-  apiRequest: jest.fn()
+  apiRequest: jest.fn().mockResolvedValue({ ok: true })
 }));
 
 // Mock toast hook
 jest.mock('@/hooks/use-toast', () => ({
   useToast: () => ({
     toast: jest.fn()
+  })
+}));
+
+// Mock blockchain hooks
+jest.mock('@/lib/blockchain', () => ({
+  useBlockchain: () => ({
+    walletAddress: '',
+    isBlockchainReady: true,
+    isWalletConnected: false,
+    isDevelopment: true,
+    networkName: 'localhost',
+    connectWallet: jest.fn().mockResolvedValue(true)
+  }),
+  useTourCrowdfunding: () => ({
+    getCampaign: jest.fn().mockResolvedValue({
+      id: 1,
+      title: 'TourChain: Revolução nas Viagens Corporativas',
+      description: 'Ajude a construir o futuro das viagens corporativas com blockchain, bem-estar e sustentabilidade.',
+      creator: '0x7Da37534E347561BEfC711F1a0dCFcb70735F268',
+      fundingGoal: BigInt(100000 * 10**18),
+      raisedAmount: BigInt(67500 * 10**18),
+      deadline: BigInt(Date.now() / 1000 + 18 * 24 * 60 * 60),
+      status: 0,
+      contributorsCount: 285,
+      fundsWithdrawn: false
+    }),
+    getCampaignRewards: jest.fn().mockResolvedValue([]),
+    pledge: jest.fn().mockResolvedValue(true),
+    isLoading: false,
+    isProcessing: false,
+    error: null
   })
 }));
 

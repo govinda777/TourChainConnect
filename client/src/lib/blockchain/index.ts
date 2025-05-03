@@ -16,6 +16,9 @@ export { default as useCarbonOffset } from './hooks/useCarbonOffset';
 // Exportar provider e hook de contexto
 export { default as BlockchainProvider, useBlockchain } from './providers/BlockchainProvider';
 
+// Exportar utilitários
+export * from './utils';
+
 // Configuração blockchain
 export const BLOCKCHAIN_CONFIG = {
   networkName: import.meta.env.VITE_BLOCKCHAIN_NETWORK || 'localhost',
