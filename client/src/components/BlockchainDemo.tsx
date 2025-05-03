@@ -8,6 +8,8 @@ import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useBlockchain } from '@/lib/blockchain/providers/BlockchainProvider';
 import { formatAddress } from '@/lib/blockchain/utils';
+import MobileWalletConnect from './MobileWalletConnect';
+import { useIsMobile } from '../hooks/use-mobile';
 
 /**
  * Componente para demonstrar e testar a integração com a blockchain
@@ -26,6 +28,7 @@ export default function BlockchainDemo() {
     toggleDevelopmentMode
   } = useBlockchain();
   
+  const isMobile = useIsMobile();
   const [lastAction, setLastAction] = useState<string>('');
   
   // Função para conectar carteira e registrar ação
@@ -142,17 +145,13 @@ export default function BlockchainDemo() {
           </div>
           
           {/* Ações da Carteira */}
-          <div className="space-y-2">
+          <div className="space-y-3">
             <h3 className="text-sm font-medium">Ações da Carteira</h3>
             <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleConnect}
-                disabled={isWalletConnected || !isBlockchainReady}
-              >
-                Conectar Carteira
-              </Button>
+              {/* Uso do componente MobileWalletConnect para melhor experiência mobile */}
+              <MobileWalletConnect 
+                onConnect={() => setLastAction('Conectando carteira...')}
+              />
               
               <Button
                 variant="outline"
@@ -163,6 +162,19 @@ export default function BlockchainDemo() {
                 Desconectar Carteira
               </Button>
             </div>
+            
+            {/* Instruções condicionais - mostradas apenas em desktop */}
+            {!isMobile && (
+              <div className="text-xs text-muted-foreground mt-2 bg-indigo-50 p-2 rounded border border-indigo-200">
+                <p className="font-medium text-indigo-800 mb-1">Acesso à Blockchain:</p>
+                <ul className="list-disc pl-4 text-indigo-700 space-y-1">
+                  <li>Instale a extensão MetaMask para o seu navegador</li>
+                  <li>Crie ou importe uma carteira</li>
+                  <li>Conecte-se à rede {networkName}</li>
+                  <li>Use o botão acima para conectar sua carteira</li>
+                </ul>
+              </div>
+            )}
           </div>
           
           {/* Logs de Ação */}

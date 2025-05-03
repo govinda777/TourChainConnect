@@ -163,6 +163,31 @@ export const BlockchainProvider: React.FC<{children: React.ReactNode}> = ({ chil
     };
   }, [isDevelopment]);
 
+  // Detecta se está em um ambiente mobile
+  const isMobileDevice = () => {
+    return (
+      typeof window !== 'undefined' && 
+      (
+        /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+        (navigator.userAgent.includes('Mac') && 'ontouchend' in document)
+      )
+    );
+  };
+
+  // Verifica se o MetaMask está disponível
+  const isMetaMaskAvailable = () => {
+    return typeof window !== 'undefined' && typeof window.ethereum !== 'undefined';
+  };
+
+  // Redireciona para o deep link do MetaMask em dispositivos móveis
+  const openMetaMaskMobile = () => {
+    // URL da sua aplicação para o callback
+    const callbackUrl = encodeURIComponent(window.location.href);
+    // Formatamos a URL de deep link para o MetaMask
+    const deepLink = `https://metamask.app.link/dapp/${window.location.host}/?${callbackUrl}`;
+    window.location.href = deepLink;
+  };
+
   // Função para conectar carteira
   const connectWallet = async () => {
     if (!isBlockchainReady) {
@@ -178,8 +203,21 @@ export const BlockchainProvider: React.FC<{children: React.ReactNode}> = ({ chil
       setTourTokenBalance('1000.00');
       return;
     }
+
+    // Verifica se está em dispositivo móvel
+    const mobileDevice = isMobileDevice();
     
     try {
+      if (mobileDevice && !isMetaMaskAvailable()) {
+        // Em mobile sem MetaMask detectado, redirecionamos para o app
+        console.log('Dispositivo móvel detectado, redirecionando para MetaMask app');
+        openMetaMaskMobile();
+        return;
+      } else if (!isMetaMaskAvailable()) {
+        console.error('MetaMask não detectado');
+        throw new Error('Carteira MetaMask não encontrada. Por favor, instale a extensão ou use o aplicativo MetaMask.');
+      }
+      
       // Solicitar acesso às contas
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
       
