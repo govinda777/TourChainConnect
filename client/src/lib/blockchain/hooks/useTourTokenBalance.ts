@@ -37,27 +37,49 @@ export function useTourTokenBalance(address?: string) {
   const query = useQuery({
     queryKey: ['tourTokenBalance', targetAddress, networkName],
     queryFn: async () => {
-      // Em ambiente de desenvolvimento, retorna um valor simulado
-      if (isDevelopment || !isBlockchainReady || !targetAddress) {
+      // Se não temos endereço alvo, retorna zero
+      if (!targetAddress) {
+        return '0.00';
+      }
+      
+      // Em ambiente de desenvolvimento, podemos usar o mock
+      if (isDevelopment) {
+        console.log('Usando saldo simulado de tokens em ambiente de desenvolvimento');
         return '1000.00';
       }
       
+      // Verificamos se a blockchain está pronta
+      if (!isBlockchainReady) {
+        console.warn('Blockchain não está pronta para consultar saldo');
+        throw new Error('Blockchain não está pronta');
+      }
+      
+      // Verificamos se o contrato está carregado
       if (isContractLoading || !tokenContract) {
+        console.warn('Contrato do token não está pronto para consultar saldo');
         throw new Error('Contrato do token não está pronto');
       }
       
       try {
+        console.log(`Consultando saldo de ${targetAddress} no contrato ${contractAddresses.tourToken}`);
+        
         // Chama o método balanceOf do contrato ERC20
         const balance = await tokenContract.balanceOf(targetAddress);
+        console.log('Saldo obtido do contrato:', balance.toString());
         
         // Formata o saldo para exibição (de wei para unidades do token)
-        return formatTokenAmount(balance);
+        const formattedBalance = formatTokenAmount(balance);
+        console.log('Saldo formatado:', formattedBalance);
+        
+        return formattedBalance;
       } catch (error) {
         console.error('Erro ao obter saldo de tokens:', error);
         return '0.00';
       }
     },
-    enabled: Boolean(targetAddress) && isBlockchainReady && (!isContractLoading || isDevelopment)
+    enabled: Boolean(targetAddress) && (isBlockchainReady || isDevelopment) && (!isContractLoading || isDevelopment),
+    // Consulta a cada 30 segundos para manter o saldo atualizado
+    refetchInterval: 30000
   });
   
   // Função para atualizar o saldo após uma transação

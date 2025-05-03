@@ -20,6 +20,8 @@ interface BlockchainContextType {
   tourTokenBalance: string;
   // Nome da rede conectada
   networkName: string;
+  // Função para alternar entre modo desenvolvimento e produção
+  toggleDevelopmentMode: () => void;
 }
 
 // Cria um contexto para os dados de blockchain
@@ -33,6 +35,7 @@ const BlockchainContext = createContext<BlockchainContextType>({
   walletAddress: null,
   tourTokenBalance: '0',
   networkName: 'development',
+  toggleDevelopmentMode: () => {},
 });
 
 // Hook para usar o contexto de blockchain em componentes
@@ -41,8 +44,11 @@ export const useBlockchain = () => useContext(BlockchainContext);
 // Provider para fornecer o contexto de blockchain para a aplicação
 export const BlockchainProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
   // Estados para gerenciar a conexão com a blockchain
-  const [isDevelopment] = useState<boolean>(
-    process.env.NODE_ENV === 'development' || import.meta.env.DEV
+  // Permite forçar modo de produção para testar a integração real com a blockchain
+  // mesmo em ambiente de desenvolvimento
+  const [isDevelopment, setIsDevelopment] = useState<boolean>(
+    (process.env.NODE_ENV === 'development' || import.meta.env.DEV) && 
+    !import.meta.env.VITE_FORCE_REAL_BLOCKCHAIN
   );
   const [isBlockchainReady, setIsBlockchainReady] = useState<boolean>(false);
   const [areContractsReady, setAreContractsReady] = useState<boolean>(false);
@@ -199,6 +205,37 @@ export const BlockchainProvider: React.FC<{children: React.ReactNode}> = ({ chil
     setTourTokenBalance('0');
     console.log('Estado de conexão de carteira resetado');
   };
+  
+  // Função para alternar entre modo de desenvolvimento e produção
+  const toggleDevelopmentMode = () => {
+    const newMode = !isDevelopment;
+    console.log(`Alterando para modo ${newMode ? 'desenvolvimento' : 'produção'}`);
+    setIsDevelopment(newMode);
+    
+    // Resetar estado
+    setIsBlockchainReady(false);
+    setAreContractsReady(false);
+    setIsWalletConnected(false);
+    setWalletAddress(null);
+    setTourTokenBalance('0');
+    
+    // Reiniciar o processo após 100ms para garantir que o estado foi atualizado
+    setTimeout(() => {
+      if (newMode) {
+        // Modo desenvolvimento
+        setIsBlockchainReady(true);
+        setTimeout(() => {
+          setAreContractsReady(true);
+        }, 500);
+      } else {
+        // Modo produção - iniciar conexão de carteira
+        if (typeof window !== 'undefined' && window.ethereum) {
+          setIsBlockchainReady(true);
+          setAreContractsReady(true);
+        }
+      }
+    }, 100);
+  };
 
   const value = {
     isDevelopment,
@@ -210,6 +247,7 @@ export const BlockchainProvider: React.FC<{children: React.ReactNode}> = ({ chil
     walletAddress,
     tourTokenBalance,
     networkName,
+    toggleDevelopmentMode, // Nova função para alternar modo
   };
 
   return (
