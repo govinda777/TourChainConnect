@@ -1,89 +1,75 @@
-# Documentação do Token TOUR
+# TourToken (TOUR) - Documentação
+
+Este documento descreve o token TOUR, sua economia, funcionalidades e utilidade no ecossistema TourChain.
 
 ## Visão Geral
 
-O token TOUR é um token utilitário baseado no padrão ERC-20 que serve como a espinha dorsal do ecossistema TourChain. Estes tokens proporcionam utilidade, governança e incentivos para todos os participantes da plataforma de gerenciamento de viagens corporativas.
-
-## Especificações Técnicas
-
-| Característica | Especificação |
-|----------------|---------------|
-| Nome | TOUR Token |
-| Símbolo | TOUR |
-| Decimais | 18 |
-| Padrão | ERC-20 |
-| Suprimento Total | 500.000.000 TOUR |
-| Suprimento Circulante Inicial | 100.000.000 TOUR |
-| Tecnologia | Smart Contracts EVM |
-| Cronograma de Emissão | Degressivo ao longo de 4 anos |
-| Blockchain Principal | Ethereum (com bridges para outras redes) |
+O TourToken (TOUR) é um token ERC20 que serve como a moeda nativa do ecossistema TourChain, incentivando comportamentos que beneficiam a sustentabilidade, eficiência e inovação em viagens corporativas.
 
 ## Tokenomics
 
+### Fornecimento
+
+- **Fornecimento Inicial**: 10.000.000 TOUR
+- **Fornecimento Máximo**: 100.000.000 TOUR
+- **Decimais**: 18
+
 ### Distribuição Inicial
 
-A distribuição inicial de tokens TOUR foi cuidadosamente planejada para garantir a sustentabilidade a longo prazo do projeto:
+| Alocação | Porcentagem | Quantidade | Propósito |
+|----------|-------------|------------|-----------|
+| Reserva do Protocolo | 30% | 3.000.000 | Financiamento de desenvolvimento, operações e crescimento |
+| Equipe e Conselheiros | 15% | 1.500.000 | Incentivo à equipe (com vesting de 2 anos) |
+| Investidores | 20% | 2.000.000 | Financiamento inicial (com vesting de 1 ano) |
+| Vendas Iniciais | 10% | 1.000.000 | Liquidez e adoção inicial |
+| Ecossistema e Comunidade | 15% | 1.500.000 | Incentivos, hackathons, grants e atividades comunitárias |
+| Recompensas | 10% | 1.000.000 | Programa inicial de staking e recompensas |
 
-* **30% (150.000.000 TOUR)** - Desenvolvimento da plataforma
-  * Período de vesting: 3 anos, com liberação trimestral
-  * Uso: Financiamento do desenvolvimento contínuo da plataforma
+### Emissão e Deflação
 
-* **25% (125.000.000 TOUR)** - Incentivos à comunidade
-  * Liberação gradual baseada em marcos de adoção
-  * Uso: Programas de incentivo para usuários, recompensas de staking
+- **Taxa de Emissão**: Governada pelo contrato de staking, com redução gradual ao longo do tempo
+- **Mecanismos Deflacionários**: 
+  - 25% das taxas de plataforma são queimadas
+  - 10% dos tokens utilizados para compensação de carbono são queimados
 
-* **20% (100.000.000 TOUR)** - Investidores iniciais e crowdfunding
-  * Vesting: 1 ano de cliff, seguido por 2 anos de liberação linear
-  * Uso: Financiamento inicial e liquidez de mercado
+## Utilidade
 
-* **15% (75.000.000 TOUR)** - Equipe e consultores
-  * Vesting: 1 ano de cliff, seguido por 3 anos de liberação linear
-  * Uso: Compensação da equipe e consultores
+O token TOUR tem múltiplas utilidades que impulsionam o ecossistema:
 
-* **10% (50.000.000 TOUR)** - Ecossistema e parcerias
-  * Liberação estratégica conforme necessidades do ecossistema
-  * Uso: Parcerias estratégicas, iniciativas de desenvolvimento do ecossistema
+### 1. Staking e Governança
 
-### Mecanismos de Queima
+Os detentores de tokens podem fazer stake para:
+- Receber recompensas de participação
+- Adquirir direitos de voto em propostas de governança
+- Influenciar decisões sobre parâmetros do protocolo, como taxas e incentivos
 
-Para criar pressão deflacionária e aumentar o valor no longo prazo, implementamos os seguintes mecanismos de queima:
+### 2. Pagamentos e Recompensas
 
-1. **Queima de Transações**: 0,5% de todas as transações de reserva de viagem na plataforma resulta em queima de tokens
-2. **Queima Programática**: Eventos trimestrais de queima baseados em métricas de desempenho da plataforma
-3. **Recompra e Queima**: 20% dos lucros da plataforma são utilizados para recompra e queima de tokens no mercado aberto
+Os tokens TOUR podem ser utilizados para:
+- Pagar serviços de viagem na plataforma
+- Receber recompensas por comportamentos sustentáveis
+- Compensar emissões de carbono de viagens
+- Acessar descontos e benefícios exclusivos
 
-## Utilidade do Token
+### 3. Crowdfunding e Financiamento
 
-### Acesso à Plataforma
+O sistema de crowdfunding permite:
+- Financiar projetos sustentáveis de turismo e viagens
+- Criar campanhas inovadoras para experiências de viagem
+- Receber recompensas baseadas em tokens por apoiar projetos
 
-* **Níveis de Assinatura**: Diferentes níveis de acesso à plataforma baseados na quantidade de tokens stakados
-* **Recursos Premium**: Funcionalidades exclusivas desbloqueadas com saldo mínimo de tokens
-* **Descontos em Serviços**: Até 30% de desconto em taxas da plataforma com base na quantidade de tokens em posse
+### 4. Compensação de Carbono
 
-### Governança
+Os tokens são essenciais para o sistema de sustentabilidade:
+- Pagamento para compensação de emissões de carbono
+- Certificados de neutralidade de carbono
+- Incentivos para escolhas de viagem mais sustentáveis
 
-* **Propostas de Melhoria**: Holders de tokens podem propor melhorias na plataforma (mínimo: 10.000 TOUR)
-* **Votação**: Sistema de votação on-chain ponderado pela quantidade de tokens em posse
-* **Decisões de Governança**: Controle sobre atualizações de protocolo, alocação de fundos do tesouro e parâmetros do sistema
+## Contrato Inteligente
 
-### Recompensas e Incentivos
+### Funcionalidades Principais
 
-* **Staking**: Prêmios de staking por bloquear tokens (APY variável de 5-15%)
-* **Recompensas de Validação**: Tokens para provedores de serviço que mantêm altos padrões de qualidade
-* **Programas de Cashback**: Devolução de percentual de gastos na forma de tokens
-* **Recompensas de Referral**: Tokens para usuários que indicam novas empresas para a plataforma
-
-### Casos de Uso Específicos no Ecossistema TourChain
-
-1. **Compensação de Carbono**: Compra de créditos de carbono tokenizados dentro da plataforma
-2. **Reservas de Viagem**: Desconto adicional quando o pagamento é feito em tokens TOUR
-3. **Programa de Bem-Estar**: Desbloqueio de recompensas especiais de bem-estar baseado em saldo de tokens
-4. **Upgrade de Classe**: Possibilidade de usar tokens para upgrades de classe em voos parceiros
-5. **Votação em Fornecedores**: Influenciar quais fornecedores são integrados à plataforma
-
-## Mecanismos Técnicos
-
-### Smart Contract
+O contrato TourToken implementa:
 
 ```solidity
 // SPDX-License-Identifier: MIT
@@ -92,249 +78,147 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
 
-contract TourToken is ERC20, ERC20Burnable, AccessControl, ERC20Permit, ERC20Votes {
+contract TourToken is ERC20, ERC20Burnable, AccessControl {
     bytes32 public constant MINTER_ROLE = keccak256("MINTER_ROLE");
     bytes32 public constant GOVERNANCE_ROLE = keccak256("GOVERNANCE_ROLE");
     
-    uint256 public constant MAX_SUPPLY = 500_000_000 * 10**18; // 500 milhões de tokens
-    uint256 public tokensBurned;
+    uint256 public immutable maxSupply;
     
-    event TokensBurned(address indexed burner, uint256 amount);
-    event RewardDistributed(address indexed recipient, uint256 amount, string reason);
-    
-    constructor() 
-        ERC20("Tour Token", "TOUR") 
-        ERC20Permit("Tour Token") 
-    {
+    constructor() ERC20("TourChain Token", "TOUR") {
+        _mint(msg.sender, 10_000_000 * 10**decimals());
+        maxSupply = 100_000_000 * 10**decimals();
+        
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
         _grantRole(MINTER_ROLE, msg.sender);
         _grantRole(GOVERNANCE_ROLE, msg.sender);
     }
     
-    function mint(address to, uint256 amount) public onlyRole(MINTER_ROLE) {
-        require(totalSupply() + amount <= MAX_SUPPLY, "Excede o suprimento maximo");
+    function mint(address to, uint256 amount) external onlyRole(MINTER_ROLE) {
+        require(totalSupply() + amount <= maxSupply, "TourToken: max supply exceeded");
         _mint(to, amount);
     }
-    
-    function burnTokens(uint256 amount) public {
-        _burn(_msgSender(), amount);
-        tokensBurned += amount;
-        emit TokensBurned(_msgSender(), amount);
-    }
-    
-    function distributeReward(address recipient, uint256 amount, string memory reason) 
-        public 
-        onlyRole(MINTER_ROLE) 
-    {
-        require(totalSupply() + amount <= MAX_SUPPLY, "Excede o suprimento maximo");
-        _mint(recipient, amount);
-        emit RewardDistributed(recipient, amount, reason);
-    }
-    
-    // Funções obrigatórias para sobrescrita devido às herança múltipla
-    function _afterTokenTransfer(address from, address to, uint256 amount)
-        internal
-        override(ERC20, ERC20Votes)
-    {
-        super._afterTokenTransfer(from, to, amount);
-    }
-
-    function _mint(address to, uint256 amount)
-        internal
-        override(ERC20, ERC20Votes)
-    {
-        super._mint(to, amount);
-    }
-
-    function _burn(address account, uint256 amount)
-        internal
-        override(ERC20, ERC20Votes)
-    {
-        super._burn(account, amount);
-    }
 }
 ```
 
-### Staking e Recompensas
+### Roles e Permissões
 
-O contrato de staking permite que os usuários bloqueiem seus tokens TOUR em troca de recompensas e benefícios adicionais:
+O contrato usa um sistema de roles para controle de acesso:
 
-```solidity
-// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+- **DEFAULT_ADMIN_ROLE**: Gerenciar roles e permissões
+- **MINTER_ROLE**: Criar novos tokens (dentro do limite máximo)
+- **GOVERNANCE_ROLE**: Propor e aprovar mudanças ao protocolo
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
+## Fluxos de Token
 
-contract TourStaking is ReentrancyGuard, Ownable {
-    using SafeERC20 for IERC20;
-    
-    IERC20 public tourToken;
-    
-    struct StakeInfo {
-        uint256 amount;
-        uint256 since;
-        uint256 claimedRewards;
-    }
-    
-    mapping(address => StakeInfo) public stakes;
-    uint256 public totalStaked;
-    uint256 public rewardRate = 10; // 10 = 10% APY base
-    uint256 public constant SECONDS_IN_YEAR = 365 days;
-    
-    event Staked(address indexed user, uint256 amount);
-    event Unstaked(address indexed user, uint256 amount);
-    event RewardPaid(address indexed user, uint256 reward);
-    
-    constructor(address _tourToken) {
-        tourToken = IERC20(_tourToken);
-    }
-    
-    function stake(uint256 amount) external nonReentrant {
-        require(amount > 0, "Quantidade deve ser maior que zero");
-        
-        // Calculate pending rewards before updating stake
-        uint256 pending = calculateReward(msg.sender);
-        
-        // Update stake info
-        if (stakes[msg.sender].amount > 0) {
-            stakes[msg.sender].amount += amount;
-        } else {
-            stakes[msg.sender] = StakeInfo({
-                amount: amount,
-                since: block.timestamp,
-                claimedRewards: 0
-            });
-        }
-        
-        totalStaked += amount;
-        
-        // Pay pending rewards
-        if (pending > 0) {
-            payReward(msg.sender, pending);
-        }
-        
-        // Transfer tokens to contract
-        tourToken.safeTransferFrom(msg.sender, address(this), amount);
-        
-        emit Staked(msg.sender, amount);
-    }
-    
-    function unstake(uint256 amount) external nonReentrant {
-        StakeInfo storage userStake = stakes[msg.sender];
-        require(userStake.amount >= amount, "Saldo insuficiente");
-        
-        // Calculate rewards
-        uint256 reward = calculateReward(msg.sender);
-        
-        // Update stake
-        userStake.amount -= amount;
-        totalStaked -= amount;
-        
-        // Pay rewards + unstaked amount
-        if (reward > 0) {
-            payReward(msg.sender, reward);
-        }
-        
-        // Return staked tokens
-        tourToken.safeTransfer(msg.sender, amount);
-        
-        emit Unstaked(msg.sender, amount);
-    }
-    
-    function claimReward() external nonReentrant {
-        uint256 reward = calculateReward(msg.sender);
-        require(reward > 0, "Sem recompensas para reivindicar");
-        
-        stakes[msg.sender].claimedRewards += reward;
-        
-        payReward(msg.sender, reward);
-    }
-    
-    function calculateReward(address user) public view returns (uint256) {
-        StakeInfo memory userStake = stakes[user];
-        if (userStake.amount == 0) {
-            return 0;
-        }
-        
-        uint256 stakedTime = block.timestamp - userStake.since;
-        uint256 reward = (userStake.amount * rewardRate * stakedTime) / (SECONDS_IN_YEAR * 100);
-        
-        return reward - userStake.claimedRewards;
-    }
-    
-    function payReward(address user, uint256 amount) internal {
-        tourToken.safeTransfer(user, amount);
-        emit RewardPaid(user, amount);
-    }
-    
-    function setRewardRate(uint256 _rewardRate) external onlyOwner {
-        rewardRate = _rewardRate;
-    }
-    
-    // Função para níveis de acesso baseados em tokens stakados
-    function getUserTier(address user) external view returns (uint8) {
-        uint256 stakedAmount = stakes[user].amount;
-        
-        if (stakedAmount >= 100000 * 10**18) { // 100,000 TOUR
-            return 4; // Platinum
-        } else if (stakedAmount >= 50000 * 10**18) { // 50,000 TOUR
-            return 3; // Gold
-        } else if (stakedAmount >= 10000 * 10**18) { // 10,000 TOUR
-            return 2; // Silver
-        } else if (stakedAmount >= 1000 * 10**18) { // 1,000 TOUR
-            return 1; // Bronze
-        } else {
-            return 0; // Basic
-        }
-    }
-}
+### Fluxo de Staking
+
+```
+Usuário → Stake Tokens → Contrato de Staking
+                             ↓
+Usuário ← Recompensas ← Distribuição de Recompensas
 ```
 
-## Auditoria e Segurança
+### Fluxo de Crowdfunding
 
-* **Escrow Multisig**: Fundos de desenvolvimento e marketing protegidos por wallet multisig 4-de-7
-* **Contratos Auditados**: Todos os contratos passarão por auditoria profissional pelas principais empresas do setor
-* **Bug Bounty Program**: Recompensas de até $100,000 para descoberta de vulnerabilidades críticas nos contratos
-* **Limitação de Transações**: Limites implementados para grandes movimentações para prevenir manipulação de mercado
+```
+Apoiador → Pledge Tokens → Contrato de Crowdfunding → Escrow
+                                      ↓
+       Criador ← Tokens   ←    Campanha Bem-sucedida
+                   ou
+       Apoiador ← Reembolso ← Campanha Fracassada
+```
 
-## Roadmap do Token
+### Fluxo de Compensação de Carbono
 
-### Fase 1: Pré-lançamento (Q4 2025)
-* Finalização do smart contract
-* Auditoria de segurança
-* Distribuição privada para investidores iniciais
-* Campanha de crowdfunding com alocação de tokens
+```
+Empresa → Tokens → Contrato CarbonOffset → Pagamento para Projetos de Compensação
+                          ↓
+                   25% → Queima
+                   75% → Projetos de Compensação
+```
 
-### Fase 2: Lançamento (Q1 2026)
-* Listagem em DEXs (Uniswap, SushiSwap)
-* Início do programa de staking
-* Implementação do portal de governança
-* Parcerias estratégicas iniciais com provedores de viagens
+## Queima de Tokens
 
-### Fase 3: Expansão (Q2-Q3 2026)
-* Listagem em exchanges centralizadas de médio porte
-* Implementação de pontes cross-chain
-* Lançamento do programa de embaixadores
-* Expansão para mercados internacionais
+A queima de tokens ocorre em várias situações:
 
-### Fase 4: Maturidade (Q4 2026+)
-* Integração com grandes provedores de pagamento
-* Transferência gradual de governança para a DAO
-* Implementação de Layer-2 para redução de custos de transação
-* Expansão para casos de uso adicionais no ecossistema de viagens
+1. **Taxas de Plataforma**: 25% das taxas coletadas são queimadas
+2. **Compensação de Carbono**: 10% dos tokens usados são queimados
+3. **Queima Voluntária**: Usuários podem queimar tokens voluntariamente
+4. **Governança**: Propostas podem incluir mecanismos de queima
 
-## Recursos Adicionais
+## Liquidez e Mercados
 
-* [GitHub do Projeto](https://github.com/tourchain) (em breve)
-* [Documentação Técnica Completa](https://docs.tourchain.io) (em breve)
-* [Whitepaper Econômico](https://tourchain.io/whitepaper) (em breve)
+Para garantir liquidez adequada:
 
----
+1. **Pools de Liquidez**: Inicialmente 15% do fornecimento será destinado a pools de liquidez em DEXs
+2. **Market Making**: Programa de market makers para manter spreads saudáveis
+3. **Incentivos de Liquidez**: Recompensas para provedores de liquidez
 
-Este documento será atualizado conforme o desenvolvimento do projeto avança e novas funcionalidades são implementadas.
+## Incentivos e Recompensas
+
+### Programa de Staking
+
+- **Recompensas Base**: Taxa anual de 5-10%
+- **Recompensas Variáveis**: Baseadas na utilização da plataforma
+- **Níveis de Staking**: Benefícios adicionais para stakes maiores e de longo prazo
+
+### Programa de Sustentabilidade
+
+- **Recompensas por Viagens Sustentáveis**: Tokens dados por escolhas ecológicas
+- **Multiplicadores de Compensação**: Mais tokens para quem compensa além do necessário
+- **Desafios Coletivos**: Recompensas para metas de sustentabilidade comunitárias
+
+## Segurança e Auditoria
+
+Os contratos de token terão:
+
+1. **Auditorias Externas**: Por múltiplas empresas de segurança
+2. **Bug Bounty**: Programa para encontrar vulnerabilidades
+3. **Testes Extensivos**: Cobertura de testes de 100%
+4. **Atualizações Graduais**: Qualquer mudança passará por fases de teste
+
+## Integração com Frontend
+
+### Componentes para Trabalhar com Tokens
+
+O frontend oferece widgets para facilitar interações com tokens:
+
+- **TokenBalance**: Exibe saldo de TOUR
+- **TokenSend**: Interface para enviar tokens
+- **StakingInterface**: Painel para stake e unstake
+- **RewardsClaim**: Widget para reivindicar recompensas
+
+### Exemplos de Hooks
+
+```typescript
+// Hook para obter saldo de tokens
+const { data: balance, isLoading } = useTourBalance(walletAddress);
+
+// Hook para fazer stake de tokens
+const { mutate: stakeTokens, isPending } = useStakeTokens();
+
+// Hook para enviar tokens
+const { mutate: sendTokens } = useSendTokens();
+```
+
+## Governança e Evolução Futura
+
+O token TOUR evoluirá para uma governança cada vez mais descentralizada:
+
+1. **Fase Inicial (1-6 meses)**: Controle centralizado pela equipe
+2. **Fase de Transição (6-18 meses)**: Votação comunitária com veto da equipe
+3. **Fase Descentralizada (18+ meses)**: Governança totalmente descentralizada via DAO
+
+## Roteiro Tokenomics
+
+| Fase | Período | Marcos |
+|------|---------|--------|
+| Lançamento | Q2 2023 | - Distribuição inicial<br>- Listagem em DEXs<br>- Programa de staking básico |
+| Crescimento | Q3-Q4 2023 | - Integração com crowdfunding<br>- Integração com compensação de carbono<br>- Expansão de incentivos |
+| Expansão | Q1-Q2 2024 | - Governança comunitária<br>- Integração cross-chain<br>- Expansão para novos mercados |
+| Maturidade | Q3 2024+ | - DAO completa<br>- Emissões geridas pela comunidade<br>- Aumento de casos de uso |
+
+## Conclusão
+
+O token TOUR foi projetado como uma base sólida para o ecossistema TourChain, fornecendo incentivos alinhados para todos os participantes enquanto promove os objetivos de sustentabilidade, inovação e eficiência no setor de viagens corporativas.

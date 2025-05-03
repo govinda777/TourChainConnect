@@ -1,144 +1,177 @@
-# TourChain Smart Contracts Documentation
+# Arquitetura de Smart Contracts do TourChain
 
-## Overview
+Este documento descreve a arquitetura e funcionalidades dos smart contracts que compõem o backbone da plataforma TourChain.
 
-TourChain é uma plataforma de gerenciamento de viagens corporativas construída com tecnologia blockchain que otimiza as experiências de viagens dos funcionários, reduz custos e minimiza o impacto ambiental. Este documento fornece informações técnicas sobre os smart contracts usados na plataforma TourChain e as redes blockchain suportadas.
+## Visão Geral da Arquitetura
 
-## Arquitetura de Smart Contracts
+O TourChain é baseado em uma arquitetura de contratos modulares que trabalham em conjunto para fornecer funcionalidades completas para gerenciamento de viagens corporativas, recompensas, financiamento e sustentabilidade.
 
-### Contratos Principais
+![Arquitetura de Smart Contracts](./smart-contracts-architecture.svg)
 
-1. **Contrato TourToken (ERC-20)**
-   - **Propósito**: Implementação do token utilitário TOUR
-   - **Padrão**: ERC-20
-   - **Funcionalidades**:
-     - Acesso a recursos premium da plataforma
-     - Direitos de voto em decisões de desenvolvimento da plataforma
-     - Mecanismo de desconto para serviços da plataforma
-     - Recompensas para apoiadores do crowdfunding proporcionais às contribuições
+## Contratos Principais
 
-2. **Contratos de Gerenciamento de Viagens**
-   - **Propósito**: Lógica de negócios principal para gerenciamento de viagens corporativas
-   - **Componentes-chave**:
-     - Reserva e verificação de viagens
-     - Rastreamento e autorização de despesas
-     - Aplicação de políticas através de restrições programáveis
-     - Processamento automatizado de reembolsos
+### 1. TourToken (TOUR)
 
-3. **Contratos de Integração com Oracles**
-   - **Propósito**: Conectar dados off-chain à blockchain
-   - **Fontes de Dados**:
-     - Preços e disponibilidade de voos
-     - Sistemas de reserva de hotéis
-     - Serviços de transporte
-     - Verificação de emissões de carbono
-   - **Implementação**: Soluções oracle agnósticas de cadeia para dados externos confiáveis
+**Função**: Token utilitário e de governança da plataforma.
 
-4. **Contratos de Compensação de Carbono**
-   - **Propósito**: Gerenciar e verificar a compensação de emissões de carbono
-   - **Recursos**:
-     - Certificados de crédito de carbono tokenizados
-     - Verificação transparente de compensações
-     - Cálculo automatizado de emissões relacionadas a viagens
+**Principais características**:
+- Token ERC20 padrão
+- Fornecimento máximo limitado a 100 milhões de tokens
+- Governança baseada em roles (MINTER_ROLE, GOVERNANCE_ROLE)
+- Mecanismos de queima para controle de inflação
 
-## Implementação Técnica
+**Interações**:
+- Utilizado por TourStaking para distribuição de recompensas
+- Utilizado por TourCrowdfunding como meio de pagamento
+- Utilizado por CarbonOffset para pagamentos de compensação de carbono
 
-### Compatibilidade EVM
+### 2. TourStaking
 
-Todos os smart contracts do TourChain são construídos para serem compatíveis com a Ethereum Virtual Machine (EVM), garantindo ampla compatibilidade com múltiplas redes blockchain.
+**Função**: Sistema de staking que incentiva a participação na plataforma.
 
-### ERC-4337 (Abstração de Conta)
+**Principais características**:
+- Staking de tokens TOUR com recompensas
+- Período mínimo de staking configurável
+- Taxa de retirada antecipada
+- Distribuição proporcional de recompensas baseada no valor e tempo de staking
 
-TourChain implementa o padrão ERC-4337 para:
-- Simplificar a experiência do usuário para usuários corporativos não técnicos
-- Permitir que as empresas interajam com a funcionalidade blockchain sem conhecimento direto de criptomoedas
-- Habilitar meta-transações para operações sem gás
-- Suportar fluxos de aprovação corporativa com múltiplas assinaturas
+**Interações**:
+- Depende do TourToken para staking e recompensas
+- Fornece incentivos para usuários corporativos e viajantes
 
-### Segurança dos Smart Contracts
+### 3. TourCrowdfunding
 
-Nossos contratos seguem as melhores práticas da indústria:
-- Suite de testes abrangente com 100% de cobertura de código
-- Múltiplas auditorias de segurança por terceiros
-- Verificação formal para componentes críticos do contrato
-- Padrões de atualizações com atraso de tempo para atualizações críticas
+**Função**: Plataforma de financiamento coletivo para projetos de turismo sustentável e inovação.
 
-## Redes Suportadas
+**Principais características**:
+- Criação de campanhas com metas de financiamento
+- Sistema de níveis de recompensa personalizáveis
+- Mecanismo de pledges com recompensas em tokens
+- Taxas de plataforma configuráveis
+- Reembolsos automáticos em caso de falha da campanha
 
-### Suporte a Mainnet (Planejado para Q1 2026)
-- Ethereum
-- Polygon
-- Arbitrum
-- Optimism
-- BNB Chain
+**Interações**:
+- Utiliza TourToken como meio de pagamento
+- Pode usar TourOracle para informações externas
 
-### Implantações Atuais em Testnet (Q4 2025)
-- Ethereum Sepolia
-- Polygon Mumbai
-- Arbitrum Goerli
+### 4. TourOracle
 
-## Roadmap de Desenvolvimento
+**Função**: Oracle para integração de dados externos como emissões de carbono e otimização de viagens.
 
-1. **Q4 2025**:
-   - Lançamento de smart contracts e MVP em testnets
-   - Conclusão da auditoria inicial de contratos
-   - Distribuição de tokens em testnet
+**Principais características**:
+- Sistema de oracles com staking como garantia
+- Múltiplas fontes de dados podem atuar como oracles
+- Armazenamento de dados sobre emissões de carbono de viagens
+- Dados de otimização de rotas e custos
+- Preços de moedas para conversões
 
-2. **Q1 2026**:
-   - Conclusão da integração com oracles
-   - Implementação de ERC-4337
-   - Implantação de contratos em mainnet
-   - Venda pública de tokens
+**Interações**:
+- Fornece dados para CarbonOffset
+- Pode ser consultado por outros contratos para informações externas
 
-3. **Q2 2026**:
-   - Implementação de funcionalidade cross-chain
-   - Sistemas avançados de governança DAO
-   - Mecanismos avançados de utilidade de tokens
+### 5. CarbonOffset
 
-## Modelo Econômico
+**Função**: Sistema para rastreamento e compensação de emissões de carbono de viagens.
 
-### Utilidade do Token
-- Acesso à plataforma e recursos premium
-- Recompensas de staking para motoristas e empresas exemplares
-- Peso de voto na governança
-- Descontos em serviços
+**Principais características**:
+- Projetos de compensação de carbono com preços e capacidades variáveis
+- Cálculo de emissões de carbono baseado em dados de viagens
+- Rastreamento de compensações e verificação
+- Integração com organizações de compensação de carbono
+- Certificados de compensação de carbono
 
-### Distribuição de Tokens
-- 30% - Desenvolvimento da plataforma
-- 25% - Incentivos à comunidade
-- 20% - Investidores iniciais e crowdfunding
-- 15% - Equipe e consultores (com vesting)
-- 10% - Crescimento do ecossistema e parcerias
+**Interações**:
+- Utiliza TourToken para pagamentos
+- Consome dados de TourOracle para emissões de carbono
 
-## Integrações Técnicas
+## Relações e Fluxos
 
-### Tecnologia Oracle
-TourChain utiliza tecnologia oracle para:
-- Alimentar smart contracts com dados externos de viagens
-- Verificar eventos e pontos de dados do mundo real
-- Permitir a aplicação automatizada de políticas com base em dados em tempo real
-- Conectar ferramentas de análise de IA com ações on-chain
+### Fluxo de Tokenomics
 
-### Integração com IA
-Os smart contracts interagem com sistemas de IA através de:
-- Recomendações de IA validadas por oracle
-- Verificação on-chain de otimizações sugeridas por IA
-- Execução automatizada de recomendações de IA aprovadas
+1. Tokens TOUR são distribuídos inicialmente para stakeholders
+2. Usuários podem fazer stake de tokens para ganhar recompensas
+3. Empresas usam tokens para compensar emissões de carbono
+4. Apoiadores usam tokens para financiar projetos sustentáveis
+5. Criadores de projetos ganham tokens através de campanhas bem-sucedidas
 
-## Para Desenvolvedores
+### Fluxo de Sustentabilidade
 
-### Interação com Contratos
-Desenvolvedores podem interagir com os contratos do TourChain através de:
-- Bibliotecas Web3 padrão
-- API GraphQL para consulta eficiente de dados
-- SDK para integração simplificada
+1. TourOracle registra dados de emissões de carbono de viagens
+2. CarbonOffset calcula o custo de compensação baseado nos projetos disponíveis
+3. Empresas pagam em tokens TOUR para compensar suas emissões
+4. O sistema rastreia e verifica as compensações
+5. Certificados de compensação são emitidos para as empresas
 
-### Recursos de Documentação
-- Documentação completa da API (chegando em Q4 2025)
-- Exemplos de integração
-- Ambientes de teste
-- Sandbox de desenvolvimento
+### Fluxo de Crowdfunding
 
----
+1. Criadores propõem campanhas de turismo sustentável
+2. Definição de níveis de recompensa com valores e benefícios
+3. Apoiadores contribuem com tokens TOUR para as campanhas
+4. O sistema automaticamente gerencia o ciclo de vida da campanha
+5. Se bem-sucedida, os fundos são liberados para o criador
+6. Se falhar, os apoiadores recebem reembolsos automáticos
 
-Esta documentação será atualizada conforme a plataforma TourChain evolui e funcionalidades blockchain adicionais são implementadas.
+## Camadas de Segurança
+
+### Controle de Acesso
+
+Todos os contratos implementam um sistema de controle de acesso baseado em roles:
+
+- **ADMIN_ROLE**: Configurações gerais e manutenção
+- **MINTER_ROLE**: Criação de novos tokens
+- **GOVERNANCE_ROLE**: Decisões de governança
+- **PROJECT_ADMIN_ROLE**: Gerenciamento de projetos de crowdfunding
+- **ORACLE_ROLE**: Fornecimento de dados externos
+- **VERIFIER_ROLE**: Verificação de compensações de carbono
+
+### Segurança de Fundos
+
+- Mecanismos de escrow para crowdfunding
+- Distribuição automática de recompensas
+- Sistema de taxas transparente
+- Limites de retirada e proteções contra ataques
+
+## Governança e Atualizações
+
+O sistema é projetado para ser governado pela comunidade através de:
+
+1. **Votação direta**: Holders de tokens TOUR podem votar em propostas
+2. **Propostas de melhoria**: Membros com GOVERNANCE_ROLE podem propor mudanças
+3. **Upgrades de contratos**: Implementação de novos recursos através de upgrades
+
+## Considerações Técnicas
+
+### Conformidade com Padrões
+
+- Contratos baseados em padrões OpenZeppelin
+- Implementação ERC20 para o token TOUR
+- Padrão de roles para controle de acesso
+
+### Otimização de Gas
+
+- Armazenamento de dados otimizado
+- Operações em lote quando possível
+- Minimização de operações custosas
+
+### Testabilidade
+
+- Cobertura de teste de 100% para todos os contratos
+- Testes de integração para fluxos completos
+- Simulações de casos extremos
+
+## Resumo de Implementação
+
+| Contrato | Arquivo | Descrição |
+|----------|---------|-----------|
+| TourToken | `contracts/tokens/TourToken.sol` | Implementação do token ERC20 da plataforma |
+| TourStaking | `contracts/tokens/TourStaking.sol` | Sistema de staking e recompensas |
+| TourCrowdfunding | `contracts/crowdfunding/TourCrowdfunding.sol` | Plataforma de financiamento coletivo |
+| TourOracle | `contracts/oracles/TourOracle.sol` | Oracle para dados externos |
+| CarbonOffset | `contracts/sustainability/CarbonOffset.sol` | Sistema de compensação de carbono |
+
+## Próximos Passos de Desenvolvimento
+
+- Implementação de votação direta e governança descentralizada
+- Integração com mais provedores de dados de emissões de carbono
+- Desenvolvimento de NFTs para certificados de compensação de carbono
+- Mecanismos avançados de liquidez para o token TOUR
