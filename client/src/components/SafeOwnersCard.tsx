@@ -1,10 +1,9 @@
 import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { Users, CheckCircle } from "lucide-react";
-import { SafeInfo } from '../lib/blockchain/hooks/useGnosisSafe';
+import { Skeleton } from "@/components/ui/skeleton";
+import { Users, ShieldCheck, UserCheck } from "lucide-react";
+import { SafeInfo } from '@/lib/blockchain/hooks/useGnosisSafe';
 
 interface SafeOwnersCardProps {
   safeInfo: SafeInfo | null;
@@ -16,26 +15,16 @@ interface SafeOwnersCardProps {
 export default function SafeOwnersCard({ 
   safeInfo, 
   connectedWallet, 
-  formatAddress, 
+  formatAddress,
   isLoading 
 }: SafeOwnersCardProps) {
-  if (!safeInfo) return null;
-
-  // Gera uma cor baseada no endereço (para consistência visual)
-  const getColorFromAddress = (address: string): string => {
-    const hash = address.toLowerCase().split('').reduce((acc, char) => {
-      return char.charCodeAt(0) + ((acc << 5) - acc);
-    }, 0);
-    
-    const h = Math.abs(hash) % 360;
-    return `hsl(${h}, 70%, 40%)`;
+  
+  // Verificar se o usuário conectado é um owner do safe
+  const isOwnerConnected = (address: string) => {
+    if (!connectedWallet) return false;
+    return connectedWallet.toLowerCase() === address.toLowerCase();
   };
-
-  // Gera as iniciais para o avatar baseado no endereço
-  const getInitials = (address: string): string => {
-    return address.substring(2, 4).toUpperCase();
-  };
-
+  
   return (
     <Card>
       <CardHeader>
@@ -44,60 +33,59 @@ export default function SafeOwnersCard({
           Administradores do Safe
         </CardTitle>
         <CardDescription>
-          Proprietários que podem confirmar transações (Threshold: {safeInfo.threshold})
+          Usuários com permissão para propor e assinar transações
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
-          {safeInfo.owners.map((owner, index) => (
-            <div 
-              key={owner} 
-              className="flex items-center justify-between p-3 rounded-lg border"
-            >
-              <div className="flex items-center">
-                <Avatar className="h-9 w-9 mr-3">
-                  <AvatarFallback 
-                    style={{ backgroundColor: getColorFromAddress(owner) }}
-                    className="text-white"
-                  >
-                    {getInitials(owner)}
-                  </AvatarFallback>
-                </Avatar>
-                
-                <div className="flex flex-col">
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="font-medium">
-                          {formatAddress(owner)}
-                          {connectedWallet && owner.toLowerCase() === connectedWallet.toLowerCase() && (
-                            <Badge variant="outline" className="ml-2 border-indigo-200 text-indigo-600">
-                              Você
-                            </Badge>
-                          )}
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p>{owner}</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                  
-                  <span className="text-xs text-muted-foreground">
-                    Proprietário #{index + 1}
-                  </span>
-                </div>
-              </div>
-              
-              {index < safeInfo.threshold && (
-                <Badge className="bg-indigo-100 text-indigo-800">
-                  <CheckCircle className="h-3 w-3 mr-1" />
-                  Confirmador
-                </Badge>
-              )}
+        {isLoading || !safeInfo ? (
+          <div className="space-y-2">
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+            <Skeleton className="h-12 w-full" />
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between text-sm mb-2">
+              <span className="font-medium">Threshold: {safeInfo.threshold} de {safeInfo.owners.length}</span>
+              <Badge variant="outline" className="text-indigo-700 border-indigo-300 bg-indigo-50">
+                <ShieldCheck className="h-3 w-3 mr-1" />
+                Multi-Sig
+              </Badge>
             </div>
-          ))}
-        </div>
+            
+            {safeInfo.owners.map((owner, index) => (
+              <div 
+                key={index} 
+                className={`flex items-center justify-between p-3 rounded-lg border ${
+                  isOwnerConnected(owner) ? 'bg-indigo-50 border-indigo-200' : ''
+                }`}
+              >
+                <div className="flex items-center">
+                  <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-medium mr-3">
+                    {index + 1}
+                  </div>
+                  <div>
+                    <div className="font-medium">{formatAddress(owner)}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {index === 0 ? 'Administrador Principal' : `Administrador ${index + 1}`}
+                    </div>
+                  </div>
+                </div>
+                
+                {isOwnerConnected(owner) && (
+                  <Badge className="bg-indigo-100 text-indigo-700">
+                    <UserCheck className="h-3 w-3 mr-1" />
+                    Você
+                  </Badge>
+                )}
+              </div>
+            ))}
+            
+            <div className="text-xs text-muted-foreground mt-4">
+              <p>Para que uma transação seja executada, ela precisa de pelo menos {safeInfo.threshold} assinaturas.</p>
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

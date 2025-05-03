@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import MobileWalletConnect from '@/components/MobileWalletConnect';
 import SafeOwnersCard from '@/components/SafeOwnersCard';
+import SafeMetricsCard from '@/components/SafeMetricsCard';
 
 export default function AuditDashboardPage() {
   const { isWalletConnected, walletAddress } = useBlockchain();
@@ -267,8 +268,15 @@ export default function AuditDashboardPage() {
             </Card>
           </div>
 
+          {/* Grid com Métricas e Transações */}
+          <SafeMetricsCard 
+            transactions={transactions}
+            balances={balances}
+            isLoading={isLoading}
+          />
+
           {/* Grid com Transações e Donos */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
             {/* Transações Recentes */}
             <Card>
               <CardHeader>

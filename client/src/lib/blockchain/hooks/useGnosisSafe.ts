@@ -1,39 +1,26 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
+import { ethers } from 'ethers';
 import { useBlockchain } from '../providers/BlockchainProvider';
-import { useToast } from '@/hooks/use-toast';
-import { formatAddress } from '../utils';
 
-// Tipos para dados do Gnosis Safe
 export interface SafeInfo {
   address: string;
   nonce: number;
   threshold: number;
   owners: string[];
-  chainId: string;
-  implementation: string;
-  modules: string[];
   version: string;
+  chainId: string;
 }
 
 export interface SafeTransaction {
   id: string;
-  timestamp: number;
-  txHash: string;
-  safeHash: string;
-  value?: string;
   to: string;
-  from: string;
-  operation: number;
-  status: 'PENDING' | 'EXECUTED' | 'FAILED';
-  confirmationsRequired: number;
-  confirmations: SafeConfirmation[];
+  value: string;
+  data: string;
+  timestamp: number;
   description?: string;
-}
-
-export interface SafeConfirmation {
-  owner: string;
-  signature: string;
-  submissionDate: number;
+  confirmations: string[]; // Lista de endereços que confirmaram
+  confirmationsRequired: number;
+  status: 'PENDING' | 'EXECUTED' | 'FAILED';
 }
 
 export interface SafeBalance {
@@ -45,266 +32,254 @@ export interface SafeBalance {
   };
   balance: string;
   fiatBalance: string;
-  fiatConversion: string;
 }
 
 /**
  * Hook para interagir com o Gnosis Safe
+ * Permite consultar informações do Safe, transações e saldos
  */
 export function useGnosisSafe() {
-  const { isDevelopment, networkName, walletAddress } = useBlockchain();
-  const { toast } = useToast();
+  const { provider } = useBlockchain();
   const [isLoading, setIsLoading] = useState(false);
-
-  // Gerar dados simulados para o ambiente de desenvolvimento
-  const getSimulatedSafeInfo = (): SafeInfo => {
-    return {
-      address: '0x1234567890123456789012345678901234567890',
-      nonce: 15,
-      threshold: 2,
-      owners: [
-        '0x7Da37534E347561BEfC711F1a0dCFcb70735F268',
-        '0x9DA37534E347561BEfC711F1a0dCFcb70735F943',
-        '0x3FA37534E347561BEfC711F1a0dCFcb70735F121'
-      ],
-      chainId: '137',
-      implementation: '0x3E5c63644E683549055b9Be8653de26E0B4CD36E',
-      modules: [],
-      version: '1.3.0'
-    };
-  };
-
-  // Gerar transações simuladas para o ambiente de desenvolvimento
-  const getSimulatedTransactions = (): SafeTransaction[] => {
-    return [
-      {
-        id: '1',
-        timestamp: Date.now() - 86400000, // Ontem
-        txHash: '0xabcdef1234567890abcdef1234567890abcdef1234567890abcdef1234567890',
-        safeHash: '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
-        value: '1000000000000000000', // 1 ETH
-        to: '0x2222222222222222222222222222222222222222',
-        from: '0x1234567890123456789012345678901234567890',
-        operation: 0,
-        status: 'EXECUTED',
-        confirmationsRequired: 2,
-        confirmations: [
-          {
-            owner: '0x7Da37534E347561BEfC711F1a0dCFcb70735F268',
-            signature: '0x...',
-            submissionDate: Date.now() - 90000000
+  
+  /**
+   * Consulta informações básicas do Safe
+   * @param safeAddress Endereço do Gnosis Safe
+   */
+  const getSafeInfo = useCallback(async (safeAddress: string): Promise<SafeInfo> => {
+    setIsLoading(true);
+    
+    try {
+      // Em um ambiente de produção, isso usaria a API do Safe Service
+      // https://safe-client.safe.global/
+      
+      // Para fins de demonstração, usamos dados simulados
+      // Em produção, substituir por uma chamada real à API do Safe
+      await new Promise(resolve => setTimeout(resolve, 800)); // Simular delay de rede
+      
+      const mockSafeInfo: SafeInfo = {
+        address: safeAddress,
+        nonce: 42,
+        threshold: 2,
+        owners: [
+          '0xD7D7Deb1a97f047CcdD5A95F20de02d7A4D3B524',
+          '0x9F84c5453F95D93E64f37F57E3B4F30bE9dAFeD4',
+          '0xA375F8120Af3cCC5dfc6c7AA4f876e21B19921f9',
+        ],
+        version: '1.3.0',
+        chainId: '137', // Polygon
+      };
+      
+      return mockSafeInfo;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+  
+  /**
+   * Consulta transações do Safe
+   * @param safeAddress Endereço do Gnosis Safe
+   */
+  const getSafeTransactions = useCallback(async (safeAddress: string): Promise<SafeTransaction[]> => {
+    setIsLoading(true);
+    
+    try {
+      // Em um ambiente de produção, isso usaria a API do Safe Transaction Service
+      
+      // Para fins de demonstração, usamos dados simulados
+      await new Promise(resolve => setTimeout(resolve, 1000)); // Simular delay de rede
+      
+      const now = Date.now();
+      const day = 24 * 60 * 60 * 1000;
+      
+      const mockTransactions: SafeTransaction[] = [
+        {
+          id: 'tx1',
+          to: '0xA1B5D97Edc2d198a4ae5D02512Ac3D9a208F55d9',
+          value: ethers.utils.parseEther('0.5').toString(),
+          data: '0x',
+          timestamp: now - 2 * day,
+          description: 'Pagamento para fornecedor de hospedagem',
+          confirmations: [
+            '0xD7D7Deb1a97f047CcdD5A95F20de02d7A4D3B524',
+            '0x9F84c5453F95D93E64f37F57E3B4F30bE9dAFeD4',
+          ],
+          confirmationsRequired: 2,
+          status: 'EXECUTED',
+        },
+        {
+          id: 'tx2',
+          to: '0xB6D3d6f4b182a4F3747Dc83074AE6B4D68DBAdF1',
+          value: ethers.utils.parseEther('1.2').toString(),
+          data: '0x',
+          timestamp: now - 5 * day,
+          description: 'Compra de tokens para staking',
+          confirmations: [
+            '0xD7D7Deb1a97f047CcdD5A95F20de02d7A4D3B524',
+            '0x9F84c5453F95D93E64f37F57E3B4F30bE9dAFeD4',
+          ],
+          confirmationsRequired: 2,
+          status: 'EXECUTED',
+        },
+        {
+          id: 'tx3',
+          to: '0xD9BC43C9B97a736114aa3e7F0D25AA4f13d93763',
+          value: ethers.utils.parseEther('0.8').toString(),
+          data: '0x',
+          timestamp: now - 12 * day,
+          description: 'Reembolso de despesas de viagem',
+          confirmations: [
+            '0xD7D7Deb1a97f047CcdD5A95F20de02d7A4D3B524',
+          ],
+          confirmationsRequired: 2,
+          status: 'PENDING',
+        },
+        {
+          id: 'tx4',
+          to: '0xF5DC4b45C552a98448704422Fd9f77F688F34C3B',
+          value: ethers.utils.parseEther('0.3').toString(),
+          data: '0x',
+          timestamp: now - 15 * day,
+          description: 'Compensação de carbono',
+          confirmations: [
+            '0xD7D7Deb1a97f047CcdD5A95F20de02d7A4D3B524',
+            '0x9F84c5453F95D93E64f37F57E3B4F30bE9dAFeD4',
+          ],
+          confirmationsRequired: 2,
+          status: 'EXECUTED',
+        },
+        {
+          id: 'tx5',
+          to: '0x3A32cd67B99B4C12C7dD63c43D781997589A0C11',
+          value: ethers.utils.parseEther('0.05').toString(),
+          data: '0x',
+          timestamp: now - 18 * day,
+          description: 'Interação com DApp de sustentabilidade',
+          confirmations: [
+            '0xD7D7Deb1a97f047CcdD5A95F20de02d7A4D3B524',
+            '0xA375F8120Af3cCC5dfc6c7AA4f876e21B19921f9',
+          ],
+          confirmationsRequired: 2,
+          status: 'EXECUTED',
+        },
+        {
+          id: 'tx6',
+          to: '0xE54BBc52ad7D9D14C94435b300c3b95139241c75',
+          value: '0',
+          data: '0x23b872dd0000000000000000000000003a32cd67b99b4c12c7dd63c43d781997589a0c110000000000000000000000000000000000000000000000056bc75e2d63100000',
+          timestamp: now - 1 * day,
+          description: 'Transferência de 100 TOUR para programa de recompensas',
+          confirmations: [
+            '0xD7D7Deb1a97f047CcdD5A95F20de02d7A4D3B524',
+          ],
+          confirmationsRequired: 2,
+          status: 'PENDING',
+        },
+      ];
+      
+      return mockTransactions;
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+  
+  /**
+   * Consulta saldos do Safe
+   * @param safeAddress Endereço do Gnosis Safe
+   */
+  const getSafeBalances = useCallback(async (safeAddress: string): Promise<SafeBalance[]> => {
+    setIsLoading(true);
+    
+    try {
+      // Em um ambiente de produção, isso usaria a API do Safe Service
+      
+      // Para fins de demonstração, usamos dados simulados
+      await new Promise(resolve => setTimeout(resolve, 700)); // Simular delay de rede
+      
+      const mockBalances: SafeBalance[] = [
+        {
+          token: {
+            name: 'Ether',
+            symbol: 'ETH',
+            decimals: 18,
+            logoUri: 'https://safe-transaction-assets.safe.global/tokens/logos/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png',
           },
-          {
-            owner: '0x9DA37534E347561BEfC711F1a0dCFcb70735F943',
-            signature: '0x...',
-            submissionDate: Date.now() - 88000000
-          }
-        ],
-        description: 'Pagamento para desenvolvimento de smart contracts'
-      },
-      {
-        id: '2',
-        timestamp: Date.now() - 172800000, // 2 dias atrás
-        txHash: '0xfedcba0987654321fedcba0987654321fedcba0987654321fedcba0987654321',
-        safeHash: '0x654321fedcba0987654321fedcba0987654321fedcba0987654321fedcba0987',
-        value: '500000000000000000', // 0.5 ETH
-        to: '0x3333333333333333333333333333333333333333',
-        from: '0x1234567890123456789012345678901234567890',
-        operation: 0,
-        status: 'EXECUTED',
-        confirmationsRequired: 2,
-        confirmations: [
-          {
-            owner: '0x7Da37534E347561BEfC711F1a0dCFcb70735F268',
-            signature: '0x...',
-            submissionDate: Date.now() - 175000000
+          balance: ethers.utils.parseEther('2.5').toString(),
+          fiatBalance: '7500.00',
+        },
+        {
+          token: {
+            name: 'TourChain Token',
+            symbol: 'TOUR',
+            decimals: 18,
+            logoUri: '',
           },
-          {
-            owner: '0x3FA37534E347561BEfC711F1a0dCFcb70735F121',
-            signature: '0x...',
-            submissionDate: Date.now() - 174000000
-          }
-        ],
-        description: 'Compra de tokens TOUR para distribuição'
-      },
-      {
-        id: '3',
-        timestamp: Date.now() - 43200000, // 12 horas atrás
-        txHash: '0x0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
-        safeHash: '0xabcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789',
-        value: '2000000000000000000', // 2 ETH
-        to: '0x4444444444444444444444444444444444444444',
-        from: '0x1234567890123456789012345678901234567890',
-        operation: 0,
-        status: 'PENDING',
-        confirmationsRequired: 2,
-        confirmations: [
-          {
-            owner: '0x9DA37534E347561BEfC711F1a0dCFcb70735F943',
-            signature: '0x...',
-            submissionDate: Date.now() - 43000000
-          }
-        ],
-        description: 'Integração com serviço de auditoria'
-      },
-    ];
-  };
-
-  // Gerar saldos simulados para o ambiente de desenvolvimento
-  const getSimulatedBalances = (): SafeBalance[] => {
-    return [
-      {
-        token: {
-          name: 'Polygon',
-          symbol: 'MATIC',
-          decimals: 18,
-          logoUri: 'https://cryptologos.cc/logos/polygon-matic-logo.png'
+          balance: ethers.utils.parseEther('1500').toString(),
+          fiatBalance: '15000.00',
         },
-        balance: '15000000000000000000', // 15 MATIC
-        fiatBalance: '15.00',
-        fiatConversion: '1.00'
-      },
-      {
-        token: {
-          name: 'TourChain Token',
-          symbol: 'TOUR',
-          decimals: 18
+        {
+          token: {
+            name: 'USD Coin',
+            symbol: 'USDC',
+            decimals: 6,
+            logoUri: 'https://safe-transaction-assets.safe.global/tokens/logos/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png',
+          },
+          balance: '5000000000', // 5,000 USDC (6 decimals)
+          fiatBalance: '5000.00',
         },
-        balance: '150000000000000000000000', // 150,000 TOUR
-        fiatBalance: '75000.00',
-        fiatConversion: '0.50'
-      },
-      {
-        token: {
-          name: 'USD Coin',
-          symbol: 'USDC',
-          decimals: 6,
-          logoUri: 'https://cryptologos.cc/logos/usd-coin-usdc-logo.png'
-        },
-        balance: '25000000000', // 25,000 USDC
-        fiatBalance: '25000.00',
-        fiatConversion: '1.00'
-      },
-    ];
-  };
-
-  // Obter informações básicas do Safe
-  const getSafeInfo = async (safeAddress?: string): Promise<SafeInfo | null> => {
-    if (isDevelopment) {
-      return getSimulatedSafeInfo();
-    }
-
-    setIsLoading(true);
-
-    try {
-      // Aqui implementaríamos a chamada real à API do Gnosis Safe
-      // Exemplo: const response = await fetch(`${API_URL}/safes/${safeAddress}`);
-      // Para propósitos de demonstração, usamos os dados simulados
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulando atraso de rede
+      ];
       
-      // Retornamos dados simulados para demonstração
-      return getSimulatedSafeInfo();
-    } catch (error) {
-      console.error('Erro ao obter informações do Safe:', error);
-      toast({
-        title: 'Erro ao carregar dados do Safe',
-        description: 'Não foi possível obter as informações do Safe.',
-        variant: 'destructive'
-      });
-      return null;
+      return mockBalances;
     } finally {
       setIsLoading(false);
     }
-  };
-
-  // Obter transações do Safe
-  const getSafeTransactions = async (
-    safeAddress?: string,
-    options: { limit?: number; offset?: number } = {}
-  ): Promise<SafeTransaction[]> => {
-    if (isDevelopment) {
-      return getSimulatedTransactions();
-    }
-
-    setIsLoading(true);
-
-    try {
-      // Implementação real apontaria para a API do Gnosis Safe
-      // Exemplo: 
-      // const queryParams = new URLSearchParams({
-      //   limit: (options.limit || 25).toString(),
-      //   offset: (options.offset || 0).toString()
-      // });
-      // const response = await fetch(`${API_URL}/safes/${safeAddress}/transactions?${queryParams}`);
-      
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulando atraso de rede
-      
-      // Retornamos dados simulados para demonstração
-      return getSimulatedTransactions();
-    } catch (error) {
-      console.error('Erro ao obter transações do Safe:', error);
-      toast({
-        title: 'Erro ao carregar transações',
-        description: 'Não foi possível obter as transações do Safe.',
-        variant: 'destructive'
-      });
-      return [];
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Obter saldos de tokens no Safe
-  const getSafeBalances = async (safeAddress?: string): Promise<SafeBalance[]> => {
-    if (isDevelopment) {
-      return getSimulatedBalances();
-    }
-
-    setIsLoading(true);
-
-    try {
-      // Implementação real apontaria para a API do Gnosis Safe
-      // Exemplo: const response = await fetch(`${API_URL}/safes/${safeAddress}/balances`);
-      
-      await new Promise(resolve => setTimeout(resolve, 1000)); // Simulando atraso de rede
-      
-      // Retornamos dados simulados para demonstração
-      return getSimulatedBalances();
-    } catch (error) {
-      console.error('Erro ao obter saldos do Safe:', error);
-      toast({
-        title: 'Erro ao carregar saldos',
-        description: 'Não foi possível obter os saldos do Safe.',
-        variant: 'destructive'
-      });
-      return [];
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Verificar se um endereço é proprietário do Safe
-  const isOwner = (safeInfo: SafeInfo | null, address: string): boolean => {
-    if (!safeInfo || !address) return false;
-    return safeInfo.owners.includes(address);
-  };
-
-  // Formatar valor com símbolo da token
-  const formatTokenValue = (value: string, decimals: number, symbol: string): string => {
-    const valueNum = parseInt(value) / Math.pow(10, decimals);
-    return `${valueNum.toLocaleString('pt-BR', { 
-      minimumFractionDigits: 2, 
-      maximumFractionDigits: 4 
+  }, []);
+  
+  /**
+   * Formata valor do token com base na quantidade de decimais
+   */
+  const formatTokenValue = useCallback((
+    balance: string, 
+    decimals: number, 
+    symbol: string
+  ): string => {
+    const formatted = ethers.utils.formatUnits(balance, decimals);
+    const numberValue = parseFloat(formatted);
+    
+    // Limitar casas decimais com base no token
+    const decimalPlaces = symbol === 'ETH' ? 4 : (symbol === 'USDC' ? 2 : 2);
+    
+    return `${numberValue.toLocaleString('pt-BR', { 
+      minimumFractionDigits: decimalPlaces,
+      maximumFractionDigits: decimalPlaces,
     })} ${symbol}`;
-  };
-
+  }, []);
+  
+  /**
+   * Formata um endereço para exibição abreviada
+   */
+  const formatAddress = useCallback((address: string): string => {
+    return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
+  }, []);
+  
+  /**
+   * Verifica se um endereço é owner do Safe
+   */
+  const isOwner = useCallback((safeInfo: SafeInfo | null, address: string): boolean => {
+    if (!safeInfo || !address) return false;
+    
+    return safeInfo.owners.some(
+      owner => owner.toLowerCase() === address.toLowerCase()
+    );
+  }, []);
+  
   return {
     getSafeInfo,
     getSafeTransactions,
     getSafeBalances,
-    isOwner,
     formatTokenValue,
+    formatAddress,
+    isOwner,
     isLoading,
-    formatAddress
   };
 }
