@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { apiRequest } from "@/lib/queryClient";
-import { 
+import { Badge } from "@/components/ui/badge";
+import {
   Dialog, 
   DialogContent, 
   DialogHeader, 
@@ -30,6 +31,8 @@ export default function CrowdfundingPage() {
   const [isWalletConnecting, setIsWalletConnecting] = useState(false);
   const [paymentTab, setPaymentTab] = useState<"crypto" | "traditional">("crypto");
   const [isPledgeSubmitting, setIsPledgeSubmitting] = useState(false);
+  const [tokenPrice, setTokenPrice] = useState(1); // Preço inicial de 1 dólar
+  const [tokensPurchased, setTokensPurchased] = useState<Array<{wallet: string, tokens: number, price: number}>>([]);
   const [, navigate] = useLocation();
   
   // Obter email da sessionStorage se disponível
