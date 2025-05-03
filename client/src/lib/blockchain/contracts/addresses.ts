@@ -1,85 +1,82 @@
-// Endereços de contratos por rede
-export const CONTRACT_ADDRESSES: Record<string, Record<string, string>> = {
-  // Ambiente local (serão preenchidos após o deploy)
-  localhost: {
-    tourToken: "",
-    tourStaking: "",
-    tourCrowdfunding: "",
-    tourOracle: "",
-    carbonOffset: ""
+// Endereços dos contratos inteligentes por rede
+// Preencher com os endereços reais após o deploy
+
+import { ethers } from 'ethers';
+
+// Tipos para os endereços dos contratos
+export interface ContractAddresses {
+  tourToken: string;
+  tourStaking: string;
+  tourCrowdfunding: string;
+  tourOracle: string;
+  carbonOffset: string;
+}
+
+// Mapeamento de endereços por rede
+export const CONTRACT_ADDRESSES: Record<string, ContractAddresses> = {
+  // Mainnet (quando os contratos forem deployados)
+  mainnet: {
+    tourToken: '',
+    tourStaking: '',
+    tourCrowdfunding: '',
+    tourOracle: '',
+    carbonOffset: ''
   },
-  // Testnet Sepolia (serão preenchidos após o deploy)
+  
+  // Testnet Sepolia
   sepolia: {
-    tourToken: "",
-    tourStaking: "",
-    tourCrowdfunding: "",
-    tourOracle: "",
-    carbonOffset: ""
+    tourToken: '',
+    tourStaking: '',
+    tourCrowdfunding: '',
+    tourOracle: '',
+    carbonOffset: ''
   },
-  // Testnet Polygon Mumbai (serão preenchidos após o deploy)
+  
+  // Testnet Mumbai (Polygon)
   polygon_mumbai: {
-    tourToken: "",
-    tourStaking: "",
-    tourCrowdfunding: "",
-    tourOracle: "",
-    carbonOffset: ""
+    tourToken: '',
+    tourStaking: '',
+    tourCrowdfunding: '',
+    tourOracle: '',
+    carbonOffset: ''
+  },
+  
+  // Localhost / Desenvolvimento
+  localhost: {
+    tourToken: '0x5FbDB2315678afecb367f032d93F642f64180aa3',
+    tourStaking: '0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512',
+    tourCrowdfunding: '0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0',
+    tourOracle: '0xCf7Ed3AccA5a467e9e704C703E8D87F634fB0Fc9',
+    carbonOffset: '0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9'
+  },
+  
+  // Ambiente de desenvolvimento (simulado)
+  development: {
+    tourToken: '0xMock_TourToken_Address',
+    tourStaking: '0xMock_TourStaking_Address',
+    tourCrowdfunding: '0xMock_TourCrowdfunding_Address',
+    tourOracle: '0xMock_TourOracle_Address',
+    carbonOffset: '0xMock_CarbonOffset_Address'
   }
 };
 
-/**
- * Função para obter o endereço do contrato com base na rede atual
- * @param contractName Nome do contrato
- * @param network Rede blockchain (padrão: valor do .env ou 'localhost')
- * @returns Endereço do contrato
- */
-export function getContractAddress(
-  contractName: string, 
-  network = import.meta.env.VITE_BLOCKCHAIN_NETWORK || 'localhost'
-): string {
-  if (!CONTRACT_ADDRESSES[network] || !CONTRACT_ADDRESSES[network][contractName]) {
-    console.warn(`Endereço do contrato ${contractName} não encontrado para a rede ${network}`);
-    return "";
+// Função para obter endereços para uma rede específica
+export function getAddressesForNetwork(networkName: string): ContractAddresses {
+  const addresses = CONTRACT_ADDRESSES[networkName];
+  
+  if (!addresses) {
+    console.warn(`Endereços de contratos não encontrados para a rede: ${networkName}. Usando desenvolvimento.`);
+    return CONTRACT_ADDRESSES.development;
   }
-  return CONTRACT_ADDRESSES[network][contractName];
+  
+  return addresses;
 }
 
-/**
- * Função para verificar se os endereços dos contratos estão configurados
- * @param network Rede blockchain (padrão: valor do .env ou 'localhost')
- * @returns Booleano indicando se todos os contratos necessários estão configurados
- */
-export function areContractsConfigured(
-  network = import.meta.env.VITE_BLOCKCHAIN_NETWORK || 'localhost'
-): boolean {
-  if (!CONTRACT_ADDRESSES[network]) {
+// Função para validar se um endereço é válido
+export function isValidAddress(address: string): boolean {
+  try {
+    return ethers.isAddress(address);
+  } catch (error) {
     return false;
   }
-  
-  const contracts = CONTRACT_ADDRESSES[network];
-  const requiredContracts = ['tourToken', 'tourCrowdfunding'];
-  
-  return requiredContracts.every(contract => 
-    contracts[contract] && contracts[contract].startsWith('0x') && contracts[contract].length === 42
-  );
-}
-
-/**
- * Função para atualizar os endereços dos contratos em tempo de execução
- * Útil para conectar aos contratos após o deploy
- * @param network Rede blockchain
- * @param addresses Objeto com os endereços dos contratos
- */
-export function updateContractAddresses(
-  network: string,
-  addresses: Record<string, string>
-): void {
-  if (!CONTRACT_ADDRESSES[network]) {
-    CONTRACT_ADDRESSES[network] = {};
-  }
-  
-  Object.entries(addresses).forEach(([contract, address]) => {
-    CONTRACT_ADDRESSES[network][contract] = address;
-  });
-  
-  console.log(`Endereços dos contratos atualizados para a rede ${network}:`, addresses);
 }
