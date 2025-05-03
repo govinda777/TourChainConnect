@@ -260,7 +260,7 @@ export default function SustainabilityCalculator() {
                 <Progress 
                   value={(emissions / 250) * 100} 
                   className="h-3 bg-neutral-200" 
-                  indicatorClassName="bg-destructive" 
+                  indicatorclassname="bg-destructive" 
                 />
                 <div className="flex justify-between text-xs text-neutral-500 mt-1">
                   <span>0</span>
