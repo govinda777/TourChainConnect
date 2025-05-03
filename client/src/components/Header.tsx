@@ -33,6 +33,26 @@ export default function Header() {
           </nav>
           
           <div className="hidden md:flex items-center space-x-4">
+            <Link href="/crowdfunding" className="text-neutral-700 hover:text-primary font-medium">
+              Crowdfunding
+            </Link>
+            <Link href="/audit-dashboard" className="flex items-center text-neutral-700 hover:text-primary font-medium">
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                className="h-4 w-4 mr-1"
+              >
+                <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                <line x1="3" x2="21" y1="9" y2="9" />
+                <line x1="9" x2="9" y1="21" y2="9" />
+              </svg>
+              Auditoria
+            </Link>
             <a href="#contact" className="px-4 py-2 rounded-md text-primary border border-primary hover:bg-primary-light font-medium transition">Contact Us</a>
             <a href="#demo" className="px-4 py-2 rounded-md bg-primary text-white hover:bg-primary-dark font-medium transition">Request Demo</a>
           </div>

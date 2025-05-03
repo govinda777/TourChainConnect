@@ -7,6 +7,7 @@ import NotFound from "@/pages/not-found";
 import HomePage from "@/pages/HomePage";
 import CrowdfundingPage from "@/pages/CrowdfundingPage";
 import JourneyPage from "@/pages/JourneyPage";
+import AuditDashboardPage from "@/pages/AuditDashboardPage";
 import ScrollToTop from "@/components/ScrollToTop";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
@@ -25,6 +26,7 @@ function Router() {
         <Route path="/" component={HomePage} />
         <Route path="/crowdfunding" component={CrowdfundingPage} />
         <Route path="/journey/:type?" component={JourneyPage} />
+        <Route path="/audit-dashboard" component={AuditDashboardPage} />
         <Route component={NotFound} />
       </Switch>
       {!isJourneyPage && <Footer />}
