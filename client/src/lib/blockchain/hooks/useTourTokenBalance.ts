@@ -28,7 +28,7 @@ export function useTourTokenBalance(address?: string) {
   const contractAddresses = getAddressesForNetwork(networkName);
   
   // Obtém a instância do contrato
-  const { contract: tokenContract, isLoading: isContractLoading } = useContract(
+  const { contract: tokenContract, isLoading: isContractLoading, error: contractError } = useContract(
     contractAddresses.tourToken,
     TOUR_TOKEN_ABI
   );
@@ -39,6 +39,7 @@ export function useTourTokenBalance(address?: string) {
     queryFn: async () => {
       // Se não temos endereço alvo, retorna zero
       if (!targetAddress) {
+        console.log('Nenhum endereço de carteira disponível para consultar saldo');
         return '0.00';
       }
       
@@ -51,13 +52,19 @@ export function useTourTokenBalance(address?: string) {
       // Verificamos se a blockchain está pronta
       if (!isBlockchainReady) {
         console.warn('Blockchain não está pronta para consultar saldo');
-        throw new Error('Blockchain não está pronta');
+        throw new Error('Blockchain não está pronta para uso');
+      }
+      
+      // Verificamos se há erro no contrato
+      if (contractError) {
+        console.error('Erro na instância do contrato:', contractError);
+        throw new Error(`Erro no contrato: ${contractError.message}`);
       }
       
       // Verificamos se o contrato está carregado
       if (isContractLoading || !tokenContract) {
         console.warn('Contrato do token não está pronto para consultar saldo');
-        throw new Error('Contrato do token não está pronto');
+        throw new Error('Contrato do token não está disponível');
       }
       
       try {
@@ -72,19 +79,28 @@ export function useTourTokenBalance(address?: string) {
         console.log('Saldo formatado:', formattedBalance);
         
         return formattedBalance;
-      } catch (error) {
+      } catch (error: any) {
         console.error('Erro ao obter saldo de tokens:', error);
-        return '0.00';
+        
+        // Fornece mensagem de erro mais detalhada
+        const errorMessage = error.message || 'Erro desconhecido na consulta de saldo';
+        throw new Error(`Falha ao consultar saldo: ${errorMessage}`);
       }
     },
     enabled: Boolean(targetAddress) && (isBlockchainReady || isDevelopment) && (!isContractLoading || isDevelopment),
     // Consulta a cada 30 segundos para manter o saldo atualizado
-    refetchInterval: 30000
+    refetchInterval: 30000,
+    // Configurações adicionais para melhorar a experiência
+    retry: 2,
+    staleTime: 10000
   });
   
   // Função para atualizar o saldo após uma transação
   const updateBalance = async (contributionAmount?: string) => {
-    if (!targetAddress) return;
+    if (!targetAddress) {
+      console.warn('Não é possível atualizar saldo: endereço não disponível');
+      return;
+    }
     
     try {
       if (isDevelopment) {
@@ -93,6 +109,8 @@ export function useTourTokenBalance(address?: string) {
         const contribution = contributionAmount ? parseFloat(contributionAmount) : 0;
         const newBalance = (currentBalance - contribution).toFixed(2);
         
+        console.log(`Atualizando saldo simulado: ${currentBalance} - ${contribution} = ${newBalance}`);
+        
         // Atualiza o cache com o novo valor
         queryClient.setQueryData(['tourTokenBalance', targetAddress, networkName], newBalance);
         return;
@@ -100,20 +118,35 @@ export function useTourTokenBalance(address?: string) {
       
       // Em produção, obtenha o saldo atualizado do contrato
       if (tokenContract) {
+        console.log(`Buscando saldo atualizado após transação para ${targetAddress}`);
         const balance = await tokenContract.balanceOf(targetAddress);
         const formattedBalance = formatTokenAmount(balance);
         
+        console.log(`Saldo atualizado: ${formattedBalance}`);
+        
         // Atualiza o cache com o novo valor
         queryClient.setQueryData(['tourTokenBalance', targetAddress, networkName], formattedBalance);
+      } else {
+        console.warn('Não é possível atualizar saldo: contrato não está disponível');
       }
     } catch (error) {
       console.error('Erro ao atualizar saldo de tokens:', error);
+      throw new Error('Falha ao atualizar saldo após transação');
     }
   };
   
+  // Fornecer também a função de refetch para atualização manual
+  const refetch = query.refetch;
+  
   return {
     ...query,
-    updateBalance
+    updateBalance,
+    refetch,
+    // Informações adicionais para debug
+    targetAddress,
+    contractAddress: contractAddresses.tourToken,
+    hasContract: !!tokenContract,
+    contractError
   };
 }
 
