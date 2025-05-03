@@ -1,54 +1,62 @@
-# Documentação Técnica do TourChain
+# TourChain Documentation
 
-Bem-vindo à documentação técnica do TourChain, uma plataforma de gerenciamento de viagens corporativas baseada em blockchain que otimiza experiências de viagem, reduz custos e minimiza o impacto ambiental.
+## Overview
 
-## Conteúdo
+Welcome to the TourChain documentation. This comprehensive guide provides detailed information on the architecture, components, and implementation of the TourChain platform - a blockchain-based solution for corporate travel management.
 
-### Smart Contracts e Blockchain
-- [Visão Geral dos Smart Contracts](smart-contracts.md)
-- [Arquitetura dos Smart Contracts](smart-contracts-architecture.svg)
-- [Redes Blockchain Suportadas](supported-networks.md)
-- [Documentação do Token TOUR](tour-token.md)
-- [Integração de Oracles](oracle-integration.md)
+## Contents
 
-## Sobre o TourChain
+1. [Architecture Overview](./architecture-overview.md)
+2. [Smart Contracts](./smart-contracts.md)
+3. [Supported Networks](./supported-networks.md)
+4. [TOUR Token](./tour-token.md)
+5. [Oracle Integration](./oracle-integration.md)
+6. [Security](./security.md)
+7. [Development & CI/CD](./development.md)
+8. [API Reference](./api-reference.md)
+9. [Frontend Integration](./frontend-integration.md)
 
-O TourChain é uma plataforma inovadora que combina tecnologias blockchain, IA e sustentabilidade para revolucionar o gerenciamento de viagens corporativas. Nossa plataforma utiliza contratos inteligentes para automatizar e otimizar todos os aspectos das viagens corporativas, desde reservas até relatórios de despesas, enquanto rastreia e compensa a pegada de carbono associada.
+## Introduction
 
-### Principais Recursos Tecnológicos:
+TourChain is a pioneering blockchain platform that transforms corporate travel management by combining blockchain technology, artificial intelligence, and sustainability tracking. Our solution enables companies to:
 
-- **Smart Contracts EVM**: Automação de processos de reserva, pagamento e reembolso
-- **Tokenomics Sustentável**: O token TOUR impulsiona o ecossistema com utilidade real
-- **Oracles Blockchain**: Conexão entre dados do mundo real e a blockchain
-- **Abstração de Contas (ERC-4337)**: Simplificação da experiência do usuário corporativo
-- **Compensação de Carbono Tokenizada**: Rastreamento e compensação transparentes de emissões
-- **Interoperabilidade Multi-Chain**: Suporte a múltiplas redes blockchain para eficiência e confiabilidade
+- Optimize travel expenditures using AI algorithms
+- Track and offset carbon emissions from business trips
+- Enhance employee travel experiences through personalized wellness programs
+- Create transparent, auditable records of all travel transactions
+- Fund and support sustainable tourism initiatives globally
 
-## Para Desenvolvedores
+## Key Technology Components
 
-Esta documentação fornece informações detalhadas para desenvolvedores que desejam:
+### Blockchain Infrastructure
 
-1. **Entender a Arquitetura**: Compreenda como os smart contracts do TourChain funcionam juntos
-2. **Integrar com a Plataforma**: Desenvolva aplicações que se integram com os contratos do TourChain
-3. **Contribuir para o Ecossistema**: Participe do desenvolvimento da plataforma
+TourChain leverages Ethereum and EVM-compatible networks for its core functionality, with a multi-contract architecture that ensures security, scalability, and flexibility.
 
-## Roteiro de Desenvolvimento
+### Smart Contracts
 
-- **Q4 2025**: MVP em testnet, auditorias iniciais
-- **Q1 2026**: Lançamento mainnet, implementação de ERC-4337
-- **Q2-Q3 2026**: Interoperabilidade cross-chain, aprimoramentos de tokenomics
-- **Q4 2026+**: DAO completa, expansão para novos mercados
+Our platform is built on a suite of meticulously designed smart contracts that handle everything from tokenomics to crowdfunding campaigns for sustainable travel initiatives.
 
-## Status de Desenvolvimento
+### Multi-Signature Administration
 
-Este projeto está atualmente em desenvolvimento, com lançamento público planejado para Q1 2026. A documentação será continuamente atualizada à medida que novos recursos são implementados e as especificações técnicas são finalizadas.
+All administrative actions are secured through Gnosis Safe multi-signature wallets, providing maximum transparency and security for fund management.
 
-## Recursos Adicionais
+### Continuous Integration/Deployment
 
-- Whitepaper (em breve)
-- GitHub (em breve)
-- Site do Projeto (em breve)
+Our development workflow includes comprehensive testing, security analysis, and automated deployment procedures to ensure the highest quality standards.
 
----
+## Development Status
 
-&copy; 2025 TourChain. Todos os direitos reservados.
+TourChain is currently in active development. We're continuously enhancing our features and refining our infrastructure to provide the best possible experience for corporate travel management.
+
+## Documentation Conventions
+
+Throughout this documentation:
+
+- Code examples are provided in relevant programming languages (Solidity, TypeScript, etc.)
+- Configuration examples include comments explaining each option
+- Diagrams illustrate complex concepts visually
+- Security considerations are highlighted for critical components
+
+## Getting Started
+
+For developers looking to contribute or integrate with TourChain, we recommend starting with the [Architecture Overview](./architecture-overview.md) and [Smart Contracts](./smart-contracts.md) documentation.

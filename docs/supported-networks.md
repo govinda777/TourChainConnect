@@ -1,97 +1,206 @@
-# Redes Blockchain Suportadas
+# Redes Suportadas
 
-Este documento lista as redes blockchain suportadas pelo TourChain e como configurar sua aplicação para usá-las.
+O TourChain foi projetado para operar em várias redes blockchain, proporcionando flexibilidade, otimização de custos e máxima acessibilidade para os usuários. Este documento detalha as redes atualmente suportadas pela plataforma TourChain, junto com configurações técnicas específicas para cada rede.
 
-## Redes Disponíveis
+> ⚠️ **IMPORTANTE**: Para obter a lista completa de endereços de contratos em cada rede, consulte o documento [Endereços de Deployment](./deployment-addresses.md).
 
-| Nome | Tipo | Chain ID | Moeda | Descrição |
-|------|------|----------|-------|-----------|
-| **Localhost** | Desenvolvimento | 1337 | ETH | Rede local para desenvolvimento e testes |
-| **Sepolia** | Testnet | 11155111 | ETH | Testnet Ethereum recomendada para testes |
-| **Polygon Mumbai** | Testnet | 80001 | MATIC | Testnet da rede Polygon para testes de escalabilidade |
+## Redes Atualmente Suportadas
 
-## Configuração
+| Rede | Chain ID | Tipo | Status | RPC URL Recomendada | Explorador |
+|------|----------|------|--------|---------------------|------------|
+| **Ethereum Mainnet** | 1 | Produção | ✅ Ativo | https://eth-mainnet.g.alchemy.com/v2/YOUR_KEY | [Etherscan](https://etherscan.io) |
+| **Polygon** | 137 | Produção | ✅ Ativo | https://polygon-mainnet.g.alchemy.com/v2/YOUR_KEY | [Polygonscan](https://polygonscan.com) |
+| **Optimism** | 10 | Produção | 🔄 Planejado | https://opt-mainnet.g.alchemy.com/v2/YOUR_KEY | [Optimism Explorer](https://optimistic.etherscan.io) |
+| **Arbitrum** | 42161 | Produção | 🔄 Planejado | https://arb-mainnet.g.alchemy.com/v2/YOUR_KEY | [Arbiscan](https://arbiscan.io) |
+| **Sepolia** | 11155111 | Testnet | ✅ Ativo | https://eth-sepolia.g.alchemy.com/v2/YOUR_KEY | [Sepolia Etherscan](https://sepolia.etherscan.io) |
+| **Polygon Mumbai** | 80001 | Testnet | ✅ Ativo | https://polygon-mumbai.g.alchemy.com/v2/YOUR_KEY | [Mumbai Polygonscan](https://mumbai.polygonscan.com) |
+| **Localhost** | 31337 | Desenvolvimento | ✅ Ativo | http://localhost:8545 | N/A |
 
-Para escolher a rede que sua aplicação deve usar, você pode:
+## Considerações Específicas por Rede
 
-1. Definir a variável de ambiente `VITE_BLOCKCHAIN_NETWORK` no arquivo `.env`:
+### Ethereum Mainnet
 
-```
-VITE_BLOCKCHAIN_NETWORK=sepolia
-```
+A rede principal Ethereum serve como nossa rede primária para transações de alto valor e atividades de governança que exigem máxima segurança.
 
-2. Ou passar a rede diretamente nas funções que interagem com a blockchain:
+**Vantagens:**
+- Maior segurança e descentralização
+- Maior liquidez para o token TOUR
+- Infraestrutura estabelecida para integração DeFi
 
-```typescript
-import { getContractAddress } from '@/lib/blockchain/contracts/addresses';
+**Considerações:**
+- Custos de gás mais elevados
+- Finalidade de transação mais lenta
+- Recomendado para transações de maior valor e ações administrativas
 
-// Obtém o endereço do contrato na rede Sepolia
-const tokenAddress = getContractAddress('tourToken', 'sepolia');
-```
+### Polygon
 
-## Configuração do MetaMask
+A rede Polygon serve como nossa rede principal para operações do dia a dia, oferecendo um equilíbrio entre segurança e eficiência de custos.
 
-Para se conectar às redes de teste, você precisará configurar o MetaMask com as seguintes informações:
+**Vantagens:**
+- Custos de transação mais baixos
+- Tempos de confirmação mais rápidos
+- Compatibilidade EVM para integração perfeita
 
-### Sepolia Testnet
+**Considerações:**
+- Camada secundária de segurança em comparação com a Ethereum mainnet
+- Algumas pontes especializadas necessárias para certas integrações
 
-- **Nome da Rede**: Sepolia
-- **Nova URL RPC**: https://sepolia.infura.io/v3/YOUR-INFURA-KEY
-- **ID da Cadeia**: 11155111
+### Soluções de Camada 2 (Optimism & Arbitrum)
+
+As redes de Camada 2 fornecem benefícios de escalabilidade enquanto herdam a segurança da Ethereum.
+
+**Vantagens:**
+- Custos de gás significativamente reduzidos
+- Processamento de transações mais rápido
+- Segurança mantida através da ancoragem na Ethereum
+
+**Considerações:**
+- Complexidade adicional de bridging para usuários
+- Níveis variados de maturidade do ecossistema
+- Otimizações específicas para cada rede
+
+## Arquitetura de Implantação
+
+O TourChain emprega uma estratégia de implantação em múltiplas redes com as seguintes características:
+
+### Padrão de Implantação de Contratos
+
+Para cada rede suportada, implantamos:
+
+1. **Contratos de Protocolo Principais**:
+   - TourToken
+   - TourStaking
+   - TourCrowdfunding
+   - TourOracle
+   - CarbonOffset
+
+2. **Infraestrutura Específica por Rede**:
+   - Carteiras multi-assinatura Gnosis Safe
+   - Adaptadores de bridge (quando aplicável)
+   - Monitores de rede
+
+### Compatibilidade Entre Redes
+
+Para facilitar operações entre redes:
+
+1. **Bridging de Tokens**: Bridges oficiais para transferir tokens TOUR entre redes
+2. **Sincronização de Estado**: Oráculos garantindo dados consistentes entre redes
+3. **Frontend Unificado**: Interface única suportando todas as redes através de troca de rede na carteira
+
+## Configurações Técnicas por Rede
+
+### Ethereum Mainnet (ChainID: 1)
+
+**Parâmetros de Rede:**
+- **Nome da Rede**: Ethereum Mainnet
 - **Símbolo da Moeda**: ETH
-- **URL do Explorador de Blocos**: https://sepolia.etherscan.io
+- **URLs RPC**:
+  - https://eth-mainnet.g.alchemy.com/v2/YOUR_KEY
+  - https://mainnet.infura.io/v3/YOUR_KEY
+  - https://rpc.ankr.com/eth
+- **Explorador**: https://etherscan.io
+- **Configuração Metamask**: [Adicionar Rede](https://chainlist.org/chain/1)
 
-### Polygon Mumbai
+**Detalhes Específicos:**
+- Finality: ~12 confirmações de bloco (~3 minutos)
+- Tempo de bloco: ~12 segundos
+- Preço de gás: 10-200 Gwei (variável)
 
-- **Nome da Rede**: Mumbai
-- **Nova URL RPC**: https://polygon-mumbai.infura.io/v3/YOUR-INFURA-KEY
-- **ID da Cadeia**: 80001
+### Polygon (ChainID: 137)
+
+**Parâmetros de Rede:**
+- **Nome da Rede**: Polygon Mainnet
 - **Símbolo da Moeda**: MATIC
-- **URL do Explorador de Blocos**: https://mumbai.polygonscan.com
+- **URLs RPC**:
+  - https://polygon-mainnet.g.alchemy.com/v2/YOUR_KEY
+  - https://polygon-rpc.com
+  - https://rpc.ankr.com/polygon
+- **Explorador**: https://polygonscan.com
+- **Configuração Metamask**: [Adicionar Rede](https://chainlist.org/chain/137)
 
-## Obtenção de Tokens para Teste
+**Detalhes Específicos:**
+- Finality: ~256 confirmações de bloco (~7-8 minutos)
+- Tempo de bloco: ~2 segundos
+- Preço de gás: 30-100 Gwei (mais estável e baixo que Ethereum)
 
-Para obter tokens para testes nas redes de teste, você pode usar os seguintes faucets:
+### Sepolia Testnet (ChainID: 11155111)
 
-### Sepolia ETH Faucet
+**Parâmetros de Rede:**
+- **Nome da Rede**: Sepolia Testnet
+- **Símbolo da Moeda**: SepoliaETH
+- **URLs RPC**:
+  - https://eth-sepolia.g.alchemy.com/v2/YOUR_KEY
+  - https://rpc.sepolia.org
+  - https://rpc2.sepolia.org
+- **Explorador**: https://sepolia.etherscan.io
+- **Configuração Metamask**: [Adicionar Rede](https://chainlist.org/chain/11155111)
+- **Faucets**: 
+  - https://sepoliafaucet.com/
+  - https://sepolia-faucet.pk910.de/
 
-- https://sepoliafaucet.com/
-- https://faucet.sepolia.dev/
+**Detalhes Específicos:**
+- Testnet oficial da Ethereum Foundation
+- Compatível com todas as ferramentas de desenvolvimento Ethereum
+- Configuração recomendada para testes antes do mainnet
 
-### Mumbai MATIC Faucet
+### Polygon Mumbai (ChainID: 80001)
 
-- https://faucet.polygon.technology/
+**Parâmetros de Rede:**
+- **Nome da Rede**: Mumbai Testnet
+- **Símbolo da Moeda**: MATIC
+- **URLs RPC**:
+  - https://polygon-mumbai.g.alchemy.com/v2/YOUR_KEY
+  - https://rpc-mumbai.maticvigil.com
+  - https://rpc.ankr.com/polygon_mumbai
+- **Explorador**: https://mumbai.polygonscan.com
+- **Configuração Metamask**: [Adicionar Rede](https://chainlist.org/chain/80001)
+- **Faucets**:
+  - https://faucet.polygon.technology/
+  - https://mumbaifaucet.com/
 
-## Serviços de RPC
+**Detalhes Específicos:**
+- Testnet oficial da Polygon
+- Baixos custos de transação, ideal para testes intensivos
+- Ambiente de pré-produção recomendado para DApps Polygon
 
-O TourChain utiliza a infraestrutura da Infura para conexão às redes públicas. Para configurar seu acesso, obtenha uma chave API da Infura e defina-a no seu arquivo `.env`:
+## Estratégia de Seleção de Rede
 
-```
-VITE_INFURA_API_KEY=sua_chave_api_infura
-```
+O TourChain emprega uma estratégia inteligente de seleção de rede para otimizar a experiência do usuário:
 
-## Compatibilidade de Contratos
+### Para Usuários Finais
 
-Todos os contratos foram projetados para funcionar em todas as redes suportadas. No entanto, algumas funcionalidades específicas podem variar conforme a rede:
+1. **Rede Padrão**: Polygon é recomendada para a maioria das operações devido às baixas taxas
+2. **Troca de Rede**: O aplicativo sugere mudanças de rede com base na operação
+3. **Estimativa de Gás**: Estimativas de custo de gás em tempo real ajudam os usuários a tomar decisões informadas
 
-- **Compensação de Carbono**: Disponível em todas as redes
-- **Oracle de Preços**: Dados reais disponíveis apenas em redes de produção
-- **Otimização de Viagens**: Dados simulados em testnets
+### Para Administradores Corporativos
 
-## Monitoramento de Transações
+1. **Operações de Alto Valor**: Ethereum mainnet recomendada para movimentações de fundos grandes
+2. **Operações Diárias**: Polygon para tarefas administrativas regulares
+3. **Testes**: Ambientes testnet para validar alterações de configuração
 
-Você pode monitorar suas transações nos seguintes exploradores:
+## Suporte a Redes Futuras
 
-- **Sepolia**: https://sepolia.etherscan.io/
-- **Mumbai**: https://mumbai.polygonscan.com/
+O TourChain está avaliando redes adicionais para integração futura:
 
-## Redes de Produção
+1. **zkSync Era**: Alto throughput com rollups ZK
+2. **Avalanche**: Rápida finalidade e baixas taxas
+3. **Base**: L2 apoiada pela Coinbase com forte foco no consumidor
+4. **BNB Chain**: Alto throughput de transações e ecossistema DeFi extenso
 
-Para ambientes de produção, estão planejadas integrações com:
+## Requisitos de Integração
 
-- Ethereum Mainnet
-- Polygon Mainnet
-- Optimism
-- Arbitrum
+Para desenvolvedores integrando com o TourChain, observe os seguintes requisitos:
 
-*Nota: As redes de produção serão habilitadas após auditorias de segurança completas dos smart contracts.*
+1. **Suporte a Carteiras**: Deve suportar Ethereum, Polygon e, idealmente, redes L2
+2. **Gerenciamento de Gás**: Deve lidar com estimativa de gás específica para cada rede
+3. **Detecção de Rede**: Detecção automática da rede atual
+4. **Suporte a Bridges**: Integração com bridges oficiais entre redes
+
+## Documentação Técnica
+
+Para informações técnicas detalhadas sobre implantação em redes específicas, consulte:
+
+1. [Configuração Hardhat](../hardhat.config.ts)
+2. [Scripts de Implantação](../contracts/scripts/)
+3. [Utilitários de Rede](../client/src/lib/blockchain/networks/)
