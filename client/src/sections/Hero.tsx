@@ -1,12 +1,17 @@
 import { useLocation } from "wouter";
 
+function OptimizedImage({ src, alt, ...props }) {
+  // Placeholder for image optimization logic.  This would ideally use a library like Sharp.
+  return <img src={src} alt={alt} {...props} />;
+}
+
 export default function Hero() {
   const [, navigate] = useLocation();
-  
+
   const startJourney = (journeyType: string) => {
     navigate(`/journey/${journeyType}`);
   };
-  
+
   return (
     <section className="relative overflow-hidden py-20 bg-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -59,14 +64,8 @@ export default function Hero() {
             </div>
           </div>
           <div className="relative hidden lg:block">
-            <div className="rounded-xl shadow-xl max-w-full h-auto animate-float w-full h-96 bg-gradient-to-r from-primary-light to-primary-lighter flex items-center justify-center">
-              <div className="text-white text-center">
-                <i className="ri-global-line text-5xl mb-4"></i>
-                <h3 className="text-2xl font-bold">TourChain</h3>
-                <p className="text-lg opacity-80">Revolucionando viagens corporativas</p>
-              </div>
-            </div>
-            
+            <OptimizedImage src="/path/to/your/image.jpg" alt="TourChain Image" className="rounded-xl shadow-xl max-w-full h-auto animate-float w-full h-96" />
+
             <div className="absolute -bottom-4 -left-4 bg-white p-4 rounded-lg shadow-lg">
               <div className="flex items-center space-x-3">
                 <div className="bg-secondary-light p-3 rounded-full">
@@ -78,7 +77,7 @@ export default function Hero() {
                 </div>
               </div>
             </div>
-            
+
             <div className="absolute -top-2 -right-2 bg-white p-3 rounded-lg shadow-lg">
               <div className="flex items-center space-x-3">
                 <div className="bg-blue-100 p-2 rounded-full">
