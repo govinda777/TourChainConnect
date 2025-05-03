@@ -29,6 +29,7 @@ export default function Header() {
             <a href="#ai-optimization" className="text-neutral-700 hover:text-primary font-medium">AI Optimization</a>
             <a href="#wellness" className="text-neutral-700 hover:text-primary font-medium">Wellness</a>
             <a href="#sustainability" className="text-neutral-700 hover:text-primary font-medium">Sustainability</a>
+            <a href="#transparency" className="text-neutral-700 hover:text-primary font-medium">Transparency</a>
             <a href="#resources" className="text-neutral-700 hover:text-primary font-medium">Resources</a>
           </nav>
           
@@ -74,7 +75,26 @@ export default function Header() {
             <a href="#ai-optimization" className="block px-3 py-2 text-neutral-700 hover:bg-primary-light rounded-md" onClick={closeMobileMenu}>AI Optimization</a>
             <a href="#wellness" className="block px-3 py-2 text-neutral-700 hover:bg-primary-light rounded-md" onClick={closeMobileMenu}>Wellness</a>
             <a href="#sustainability" className="block px-3 py-2 text-neutral-700 hover:bg-primary-light rounded-md" onClick={closeMobileMenu}>Sustainability</a>
+            <a href="#transparency" className="block px-3 py-2 text-neutral-700 hover:bg-primary-light rounded-md" onClick={closeMobileMenu}>Transparency</a>
             <a href="#resources" className="block px-3 py-2 text-neutral-700 hover:bg-primary-light rounded-md" onClick={closeMobileMenu}>Resources</a>
+            <Link href="/audit-dashboard" className="block px-3 py-2 text-neutral-700 hover:bg-primary-light rounded-md flex items-center" onClick={closeMobileMenu}>
+              <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                className="h-4 w-4 mr-2"
+              >
+                <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                <line x1="3" x2="21" y1="9" y2="9" />
+                <line x1="9" x2="9" y1="21" y2="9" />
+              </svg>
+              Auditoria
+            </Link>
+            <Link href="/crowdfunding" className="block px-3 py-2 text-neutral-700 hover:bg-primary-light rounded-md" onClick={closeMobileMenu}>Crowdfunding</Link>
             <div className="flex space-x-2 pt-3">
               <a href="#contact" className="flex-1 px-4 py-2 text-center rounded-md text-primary border border-primary hover:bg-primary-light font-medium" onClick={closeMobileMenu}>Contact</a>
               <a href="#demo" className="flex-1 px-4 py-2 text-center rounded-md bg-primary text-white hover:bg-primary-dark font-medium" onClick={closeMobileMenu}>Demo</a>

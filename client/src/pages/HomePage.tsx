@@ -5,6 +5,7 @@ import KeyDifferentiators from "@/sections/KeyDifferentiators";
 import AIDashboard from "@/sections/AIDashboard";
 import WellnessProgram from "@/sections/WellnessProgram";
 import SustainabilityCalculator from "@/sections/SustainabilityCalculator";
+import TransparencyAudit from "@/sections/TransparencyAudit";
 import Testimonials from "@/sections/Testimonials";
 import DemoRequest from "@/sections/DemoRequest";
 import Resources from "@/sections/Resources";
@@ -142,6 +143,7 @@ export default function HomePage() {
       <AIDashboard />
       <WellnessProgram />
       <SustainabilityCalculator />
+      <TransparencyAudit />
       <Testimonials />
       <DemoRequest />
       <Resources />
