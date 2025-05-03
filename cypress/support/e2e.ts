@@ -13,9 +13,10 @@
 // https://on.cypress.io/configuration
 // ***********************************************************
 
-import './commands';
+import './commands.ts';
 import '@cypress/webpack-preprocessor';
 import 'cypress-localstorage-commands';
+import { blockchainMock } from './blockchain-mock';
 
 declare global {
   namespace Cypress {
@@ -28,3 +29,38 @@ declare global {
     }
   }
 }
+
+beforeEach(() => {
+  cy.intercept('GET', '/api/**', (req) => {
+    req.continue();
+  }).as('apiRequests');
+
+  cy.window().then((win) => {
+    win.localStorage.clear();
+    win.sessionStorage.clear();
+  });
+
+  blockchainMock.setup().then((defaultAccount) => {
+    cy.wrap(defaultAccount).as('userAccount');
+  });
+});
+
+// Custom commands for blockchain interactions
+Cypress.Commands.add('connectWallet', () => {
+  cy.get('[data-testid=connect-wallet]').click();
+  cy.get('@userAccount').then((account) => {
+    cy.window().then((win) => {
+      win.ethereum.selectedAddress = account;
+    });
+  });
+});
+
+Cypress.Commands.add('mockTokenBalance', (balance: string) => {
+  cy.get('@userAccount').then((account) => {
+    blockchainMock.mockContractCall(
+      'TOKEN_CONTRACT_ADDRESS',
+      'balanceOf',
+      ethers.parseEther(balance)
+    );
+  });
+});
