@@ -87,6 +87,7 @@
     "react-resizable-panels": "^2.1.7",
     "recharts": "^2.15.2",
     "remixicon": "^4.6.0",
+    "solidity-coverage": "^0.8.15",
     "stripe": "^18.1.0",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",

@@ -1,0 +1,22 @@
+{
+  "remappings": [
+    "@openzeppelin/=node_modules/@openzeppelin/"
+  ],
+  "optimizer": {
+    "enabled": true,
+    "runs": 200
+  },
+  "solc": {
+    "version": "0.8.20"
+  },
+  "sources": {
+    "contracts/": {
+      "urls": [
+        "contracts/"
+      ]
+    }
+  },
+  "settings": {
+    "evmVersion": "paris"
+  }
+}

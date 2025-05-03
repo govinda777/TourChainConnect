@@ -6,6 +6,7 @@ import deployTourStaking from "./deploy-tour-staking";
 import deployTourCrowdfunding from "./deploy-tour-crowdfunding";
 import deployTourOracle from "./deploy-tour-oracle";
 import deployCarbonOffset from "./deploy-carbon-offset";
+import saveDeployment from "./save-deployment";
 
 async function main() {
   console.log("=".repeat(80));
