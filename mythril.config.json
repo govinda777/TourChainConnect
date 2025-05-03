@@ -1,22 +1,45 @@
 {
-  "remappings": [
-    "@openzeppelin/=node_modules/@openzeppelin/"
-  ],
-  "optimizer": {
-    "enabled": true,
-    "runs": 200
-  },
   "solc": {
-    "version": "0.8.20"
+    "remappings": [
+      "@openzeppelin/=node_modules/@openzeppelin/"
+    ],
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "evmVersion": "london"
   },
-  "sources": {
-    "contracts/": {
-      "urls": [
-        "contracts/"
+  "analysis": {
+    "modules": [
+      "print",
+      "assertions",
+      "unchecked-math",
+      "arbitrary-jump",
+      "ether-thief",
+      "suicide",
+      "control-flow",
+      "delegatecall",
+      "constant-function",
+      "external-function"
+    ],
+    "timeout": 1000,
+    "max-depth": 32,
+    "transaction-count": 3,
+    "execution-timeout": 60,
+    "create-timeout": 10,
+    "solver-timeout": 10000,
+    "loop-bound": 3,
+    "transaction-sequences": [
+      [
+        {
+          "sender": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe",
+          "receiver": "0x0000000000000000000000000000000000000000",
+          "function": "Constructor",
+          "calldata": "",
+          "value": "0",
+          "caller": "0xaffeaffeaffeaffeaffeaffeaffeaffeaffeaffe"
+        }
       ]
-    }
-  },
-  "settings": {
-    "evmVersion": "paris"
+    ]
   }
 }
