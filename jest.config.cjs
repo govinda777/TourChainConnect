@@ -5,7 +5,8 @@ module.exports = {
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/client/src/$1',
     '^@assets/(.*)$': '<rootDir>/attached_assets/$1',
-    '^@shared/(.*)$': '<rootDir>/shared/$1'
+    '^@shared/(.*)$': '<rootDir>/shared/$1',
+    'import\\.meta': '<rootDir>/client/src/__tests__/setup/mock-import-meta.js'
   },
   transform: {
     '^.+\\.(js|jsx|ts|tsx)$': ['babel-jest', { presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-typescript'] }]

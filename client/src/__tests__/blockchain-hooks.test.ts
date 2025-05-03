@@ -1,4 +1,4 @@
-import { renderHook, act } from '@testing-library/react-hooks';
+import { renderHook, act } from '@testing-library/react';
 import { useBlockchain } from '../lib/blockchain/providers/BlockchainProvider';
 import { useTourTokenBalance } from '../lib/blockchain/hooks/useTourTokenBalance';
 import { useTourCrowdfunding } from '../lib/blockchain/hooks/useTourCrowdfunding';

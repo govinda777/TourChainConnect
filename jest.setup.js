@@ -1,5 +1,8 @@
 import '@testing-library/jest-dom';
 
+// Import mock import.meta.env
+import './client/src/__tests__/setup/mock-import-meta';
+
 // Mock localStorage and sessionStorage for tests
 const localStorageMock = (() => {
   let store = {};
