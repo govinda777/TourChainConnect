@@ -1,105 +1,80 @@
 import { Given, When, Then } from '@badeball/cypress-cucumber-preprocessor';
 
-// Passos genéricos para todas as jornadas
-
+// Cenário: Iniciar uma jornada de bem-estar
 Given('que estou na página inicial', () => {
   cy.visit('/');
 });
 
-When('eu clico no botão {string}', (buttonText) => {
-  cy.contains('button', buttonText).click();
+When('eu clico no cartão de jornada {string}', (jornada) => {
+  cy.contains(jornada).click();
 });
 
-Then('devo ser redirecionado para a página de jornada', () => {
-  cy.url().should('include', '/journey/');
+Then('devo ser redirecionado para a página de jornada de bem-estar', () => {
+  cy.url().should('include', '/journey/wellness');
+  cy.contains('Jornada de Bem-Estar').should('be.visible');
 });
 
-Then('devo ver o título {string}', (title) => {
-  cy.contains('h1', title).should('be.visible');
+Then('devo ver os estágios da jornada', () => {
+  cy.contains('Progresso').should('be.visible');
+  cy.get('[data-cy="journey-stages"]').should('be.visible');
 });
 
-Then('devo ver a barra de progresso iniciar em {int}%', (percentage) => {
-  cy.get('[data-cy=journey-progress]').should('have.attr', 'value', percentage.toString());
-});
-
-// Passos específicos para cada tipo de jornada
-
-Given('que estou na página de jornada de bem-estar', () => {
+// Cenário: Progredir através de uma jornada
+Given('que estou em uma jornada de bem-estar', () => {
   cy.visit('/journey/wellness');
+  cy.contains('Jornada de Bem-Estar').should('be.visible');
 });
 
-Given('que estou na página de jornada de sustentabilidade', () => {
-  cy.visit('/journey/sustainability');
+When('eu completo o estágio atual', () => {
+  cy.get('[data-cy="current-stage-button"]').click();
 });
 
-Given('que estou na página de jornada de otimização de custos', () => {
-  cy.visit('/journey/optimization');
+Then('meu progresso deve ser atualizado', () => {
+  cy.get('[data-cy="progress-bar"]').should('have.attr', 'aria-valuenow').and('not.equal', '0');
 });
 
-Given('que estou na página de jornada tecnológica', () => {
-  cy.visit('/journey/blockchain');
+Then('devo ver o próximo estágio da jornada', () => {
+  cy.get('[data-cy="journey-stages"]').contains('Estágio').should('be.visible');
 });
 
-When('a barra de progresso atinge {int}%', (percentage) => {
-  // Este passo pode precisar de um mock ou espera, pois o progresso é automático na aplicação
-  cy.wait(10000); // Esperar tempo suficiente para o progresso atingir 100%
-  cy.get('[data-cy=journey-progress]').should('have.attr', 'value', percentage.toString());
+// Cenário: Completar uma jornada e ser direcionado para o financiamento coletivo
+Given('que estou no último estágio de uma jornada', () => {
+  // Simulamos estar no último estágio ajustando o localStorage
+  cy.visit('/journey/wellness');
+  cy.window().then((win) => {
+    // Usar sessionId do localStorage para continuar com a mesma sessão
+    const journeyData = {
+      id: 'test-session-id',
+      type: 'wellness',
+      progress: 67,
+      stages: ['Estágio 1', 'Estágio 2', 'Estágio 3'],
+      currentStage: 2, // último estágio (índice 2 de 3 estágios)
+      startedAt: new Date().toISOString(),
+      lastActivityAt: new Date().toISOString(),
+      completed: false
+    };
+    
+    win.localStorage.setItem('currentJourney', JSON.stringify(journeyData));
+  });
+  cy.reload();
 });
 
-Then('devo ver a mensagem {string}', (message) => {
-  cy.contains(message).should('be.visible');
+When('eu completo o último estágio', () => {
+  cy.get('[data-cy="current-stage-button"]').click();
 });
 
-Then('devo ver o botão {string}', (buttonText) => {
-  cy.contains('button', buttonText).should('be.visible');
+Then('devo ver uma mensagem de parabéns', () => {
+  cy.contains('Parabéns!').should('be.visible');
+});
+
+Then('devo ver um botão para apoiar o projeto', () => {
+  cy.contains('Apoiar este projeto').should('be.visible');
+});
+
+When('eu clico no botão para apoiar', () => {
+  cy.contains('Apoiar este projeto').click();
 });
 
 Then('devo ser redirecionado para a página de financiamento coletivo', () => {
   cy.url().should('include', '/crowdfunding');
-});
-
-// Passos para verificação de elementos específicos das jornadas
-
-When('a jornada mostra informações sobre compensação de carbono', () => {
-  cy.contains('compensação de carbono').should('be.visible');
-});
-
-Then('devo ver dados sobre tokenização de certificados de carbono', () => {
-  cy.contains('certificados de carbono tokenizados').should('be.visible');
-});
-
-Then('devo ver como smart contracts validam a compensação de emissões', () => {
-  cy.contains('smart contracts').should('be.visible');
-  cy.contains('compensação de emissões').should('be.visible');
-});
-
-When('a jornada mostra informações sobre análise de despesas', () => {
-  cy.contains('análise de despesas').should('be.visible');
-});
-
-Then('devo ver dados sobre como oracles de IA otimizam gastos', () => {
-  cy.contains('oracles de IA').should('be.visible');
-  cy.contains('otimização de gastos').should('be.visible');
-});
-
-Then('devo ver exemplos de economia através de smart contracts', () => {
-  cy.contains('economia').should('be.visible');
-  cy.contains('smart contracts').should('be.visible');
-});
-
-When('a jornada mostra informações sobre a tecnologia EVM', () => {
-  cy.contains('tecnologia EVM').should('be.visible');
-});
-
-Then('devo ver informações sobre smart contracts', () => {
-  cy.contains('smart contracts').should('be.visible');
-});
-
-Then('devo ver explicações sobre implementação ERC-4337', () => {
-  cy.contains('ERC-4337').should('be.visible');
-});
-
-Then('devo ver como oracles conectam dados off-chain com a blockchain', () => {
-  cy.contains('oracles').should('be.visible');
-  cy.contains('dados off-chain').should('be.visible');
 });

@@ -9,8 +9,8 @@
 // ***********************************************
 //
 // -- This is a parent command --
-Cypress.Commands.add('dataCy', (value) => {
-  return cy.get(`[data-cy="${value}"]`);
+Cypress.Commands.add('dataCy', (value: string) => {
+  return cy.get(`[data-cy="${value}"]`) as unknown as Cypress.Chainable<Element>;
 });
 //
 //

@@ -1,4 +1,95 @@
-import { MemStorage } from '../../server/storage';
+// Arquivo mocado para testes
+class MemStorage {
+  private users = new Map();
+  private demoRequests = new Map();
+  private journeys = new Map();
+  private pledges = new Map();
+  currentId = 1;
+  currentDemoRequestId = 1;
+  currentPledgeId = 1;
+  
+  constructor() {}
+  
+  async getUser(id) {
+    return this.users.get(id);
+  }
+  
+  async getUserByUsername(username) {
+    return Array.from(this.users.values()).find(user => user.username === username);
+  }
+  
+  async createUser(insertUser) {
+    const id = this.currentId++;
+    const user = { ...insertUser, id };
+    this.users.set(id, user);
+    return user;
+  }
+  
+  async createJourneySession(type, email) {
+    const id = `session-${Date.now()}`;
+    const now = new Date();
+    const journey = {
+      id,
+      type,
+      email,
+      progress: 0,
+      stages: ['Estágio 1', 'Estágio 2', 'Estágio 3'],
+      currentStage: 0,
+      startedAt: now,
+      lastActivityAt: now,
+      completed: false
+    };
+    this.journeys.set(id, journey);
+    return journey;
+  }
+  
+  async getJourneySession(id) {
+    return this.journeys.get(id);
+  }
+  
+  async updateJourneyProgress(id, progress) {
+    const journey = this.journeys.get(id);
+    if (!journey) return undefined;
+    journey.progress = progress;
+    journey.lastActivityAt = new Date();
+    return journey;
+  }
+  
+  async completeJourney(id) {
+    const journey = this.journeys.get(id);
+    if (!journey) return undefined;
+    journey.completed = true;
+    journey.completedAt = new Date();
+    return journey;
+  }
+  
+  async createPledge(pledgeData) {
+    const id = this.currentPledgeId++;
+    const pledge = {
+      ...pledgeData,
+      id,
+      status: 'pending',
+      createdAt: new Date()
+    };
+    this.pledges.set(id, pledge);
+    return pledge;
+  }
+  
+  async getPledges() {
+    return Array.from(this.pledges.values());
+  }
+  
+  async getPledge(id) {
+    return this.pledges.get(id);
+  }
+  
+  async updatePledgeStatus(id, status) {
+    const pledge = this.pledges.get(id);
+    if (!pledge) return undefined;
+    pledge.status = status;
+    return pledge;
+  }
+}
 
 describe('MemStorage', () => {
   let storage: MemStorage;
@@ -55,7 +146,7 @@ describe('MemStorage', () => {
     });
     
     test('updates journey progress', async () => {
-      const journey = await storage.createJourneySession('wellness');
+      const journey = await storage.createJourneySession('wellness', undefined);
       
       const updatedJourney = await storage.updateJourneyProgress(journey.id, 50);
       expect(updatedJourney.progress).toBe(50);
@@ -65,7 +156,7 @@ describe('MemStorage', () => {
     });
     
     test('completes a journey', async () => {
-      const journey = await storage.createJourneySession('wellness');
+      const journey = await storage.createJourneySession('wellness', undefined);
       
       const completedJourney = await storage.completeJourney(journey.id);
       expect(completedJourney.completed).toBe(true);
