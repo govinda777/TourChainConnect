@@ -20,14 +20,14 @@ Then('eu devo ver meu saldo atual de tokens TOUR', () => {
 });
 
 // Steps para o cenário "Atualização do saldo após uma transação"
-Given('eu tenho um saldo inicial de {string} tokens', (amount) => {
+Given('eu tenho um saldo inicial de {string} tokens', (amount: string) => {
   // Simula um saldo inicial usando o comando personalizado
   cy.mockTokenBalance(amount);
   // Verifica se o saldo foi definido corretamente
   cy.get('[data-cy=token-balance-amount]').should('contain', amount);
 });
 
-When('eu faço uma contribuição de {string} tokens', (amount) => {
+When('eu faço uma contribuição de {string} tokens', (amount: string) => {
   // Simula o preenchimento do valor da contribuição
   cy.get('[data-cy=contribution-input]').type(amount);
   // Clica no botão de contribuir
@@ -36,7 +36,7 @@ When('eu faço uma contribuição de {string} tokens', (amount) => {
   cy.get('[data-cy=transaction-confirmation]', { timeout: 10000 }).should('be.visible');
 });
 
-Then('meu saldo deve ser atualizado para {string} tokens', (expectedAmount) => {
+Then('meu saldo deve ser atualizado para {string} tokens', (expectedAmount: string) => {
   // Verifica se o saldo foi atualizado para o valor esperado
   cy.get('[data-cy=token-balance-amount]', { timeout: 5000 })
     .should('contain', expectedAmount);

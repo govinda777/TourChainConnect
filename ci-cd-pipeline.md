@@ -1,111 +1,142 @@
-# Pipeline de CI/CD para Testes E2E
+# Pipeline CI/CD para Testes E2E
 
-Este documento descreve a configuração e execução da pipeline de CI/CD para testes end-to-end (E2E) no projeto.
+Este documento descreve a configuração da pipeline de integração contínua (CI) e entrega contínua (CD) para execução de testes end-to-end (E2E) no projeto TourChain.
 
-## Estrutura de Arquivos
+## Visão Geral
 
-- `cypress/`: Diretório principal dos testes E2E
-  - `e2e/features/`: Arquivos de feature (especificações em formato Gherkin)
-  - `e2e/step_definitions/`: Implementações dos passos de teste
-  - `support/`: Arquivos de suporte, comandos personalizados e configurações
-  - `logs/`: Logs de execução dos testes
-  - `results/`: Resultados dos testes em formato JSON
-  - `reports/`: Relatórios HTML gerados a partir dos resultados
-  - `screenshots/`: Capturas de tela em caso de falha
-  - `videos/`: Vídeos da execução dos testes
+A pipeline de CI/CD é responsável por:
 
-- `scripts/`: Scripts para automação da pipeline
-  - `run-e2e-tests.js`: Script para execução dos testes E2E
-  - `generate-test-report.js`: Script para geração de relatórios HTML
-  - `run-e2e-workflow.sh`: Script shell para coordenar a execução do workflow
+1. Executar testes E2E automaticamente
+2. Gerar relatórios de resultados
+3. Validar a qualidade do código a cada commit ou pull request
 
-## Frameworks e Ferramentas
+## Tecnologias Utilizadas
 
 - **Cypress**: Framework de testes E2E
-- **Cucumber**: Framework de BDD para escrita de testes em linguagem natural
-- **Cypress Cucumber Preprocessor**: Integração entre Cypress e Cucumber
+- **Cucumber/Gherkin**: Sintaxe para escrita de testes BDD (Behavior-Driven Development)
+- **GitHub Actions**: Ambiente de execução da pipeline CI/CD
 
-## Pipeline de Execução
+## Estrutura dos Testes
 
-1. **Preparação do Ambiente**
-   - Criação/limpeza de diretórios de logs, resultados, relatórios, screenshots e vídeos
-   - Configuração do ambiente de teste
-
-2. **Execução dos Testes**
-   - Inicialização do servidor de aplicação
-   - Execução dos testes Cypress
-   - Captura de logs, screenshots e vídeos
-
-3. **Geração de Relatórios**
-   - Processamento dos resultados JSON
-   - Geração de relatório HTML
-
-4. **Finalização**
-   - Encerramento do servidor
-   - Exibição do sumário de execução
-
-## Como Executar os Testes
-
-### Execução Manual
-
-Para executar os testes manualmente durante o desenvolvimento:
-
-```bash
-# Execução interativa dos testes (com interface gráfica do Cypress)
-npm run test:e2e
-
-# Execução em modo headless (sem interface gráfica)
-npx cypress run
+```
+cypress/
+├── e2e/
+│   ├── features/          # Arquivos .feature com cenários de teste em Gherkin
+│   └── step_definitions/  # Implementação dos passos em TypeScript
+├── fixtures/              # Dados fixos para mock em testes
+├── plugins/               # Plugins do Cypress
+├── results/               # Resultados dos testes (JSON)
+├── reports/               # Relatórios gerados dos testes (HTML)
+└── support/               # Comandos e utilitários personalizados
 ```
 
-### Execução na Pipeline CI/CD
+## Scripts de Automação
 
-Para executar os testes na pipeline CI/CD do Replit:
+### Execução de Todos os Testes
 
-1. Inicie o workflow "E2E Tests" pelo painel de workflows
-2. Ou execute o script shell diretamente:
+Para executar todos os testes E2E:
 
 ```bash
 ./scripts/run-e2e-workflow.sh
 ```
 
-## Relatórios de Teste
+Este script:
+1. Prepara o ambiente para os testes
+2. Inicia o servidor da aplicação
+3. Executa os testes Cypress
+4. Gera relatórios HTML dos resultados
+5. Encerra o servidor da aplicação
 
-Após a execução dos testes, os relatórios são gerados em:
+### Execução Seletiva de Testes
 
-- **Relatórios HTML**: `cypress/reports/report-YYYY-MM-DD.html`
-- **Vídeos**: `cypress/videos/`
-- **Screenshots de falhas**: `cypress/screenshots/`
-- **Logs**: `cypress/logs/workflow.log`
+Para executar apenas testes com tags específicas:
 
-## Troubleshooting
+```bash
+node scripts/run-tests-by-tag.js --tags @blockchain,@sustainability
+```
 
-### Problemas Comuns
+As tags disponíveis incluem:
+- `@blockchain`: Testes relacionados à integração com blockchain
+- `@tokens`: Testes relacionados ao token TOUR
+- `@sustainability`: Testes de funcionalidades de sustentabilidade
+- `@metrics`: Testes de métricas e estatísticas
+- `@offsets`: Testes de compensação de carbono
+- `@reporting`: Testes de geração de relatórios
 
-1. **Servidor não inicializa**
-   - Verifique se a porta 5000 está disponível
-   - Verifique os logs em `cypress/logs/server.log`
+## Configuração da Pipeline CI/CD no GitHub Actions
 
-2. **Erros de Tipo no Cypress**
-   - Os erros de tipo não impedem a execução dos testes
-   - Para corrigir, ajuste os arquivos de definição de tipos em `cypress/support/`
+O arquivo `.github/workflows/smart-contracts.yml` configura a execução automatizada de testes na pipeline CI/CD.
 
-3. **Falha na Conexão com o Servidor**
-   - O script aguarda até 60 segundos pela inicialização do servidor
-   - Verifique se o servidor está respondendo em `http://localhost:5000`
+```yaml
+name: Smart Contracts CI
 
-## Integração Contínua
+on:
+  push:
+    branches: [ main, development ]
+  pull_request:
+    branches: [ main, development ]
 
-Este projeto está configurado para executar testes E2E automaticamente em:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm ci
+      - name: Run E2E tests
+        run: ./scripts/run-e2e-workflow.sh
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        with:
+          name: test-results
+          path: |
+            cypress/reports
+            cypress/videos
+            cypress/screenshots
+        if: always()
+```
 
-1. **Pull Requests**: A cada PR, os testes são executados para validar as alterações
-2. **Deploy**: Antes de cada deploy para produção, os testes são executados para validar a build
+## Análise de Resultados
 
-## Manutenção
+Após a execução dos testes na pipeline CI/CD:
 
-Para manter os testes E2E atualizados:
+1. Acesse os artefatos gerados na interface do GitHub Actions
+2. Consulte os relatórios HTML para visualizar os resultados detalhados
+3. Analise vídeos e screenshots em caso de falhas para identificar problemas
 
-1. Adicione novos arquivos de feature em `cypress/e2e/features/`
-2. Implemente os passos em `cypress/e2e/step_definitions/`
-3. Adicione comandos personalizados em `cypress/support/commands.ts`
-4. Atualize as definições de tipos em `cypress/support/index.d.ts`
+## Práticas Recomendadas
+
+1. **Manutenção dos Testes**: Mantenha os testes atualizados conforme a aplicação evolui
+2. **Evite Testes Flaky**: Implemente esperas explícitas e corretamente configuradas
+3. **Mantenha Independência**: Cada teste deve ser independente e não depender de outros
+4. **Use Tags Estrategicamente**: Organize seus testes com tags para facilitar execuções seletivas
+5. **Investigação de Falhas**: Utilize vídeos e screenshots para identificar problemas
+
+## Resolução de Problemas
+
+### Falhas Comuns na Pipeline
+
+1. **Timeouts**: Verifique se os tempos de espera estão adequados e se a aplicação está funcionando corretamente
+2. **Elementos Não Encontrados**: Atualize os seletores ou use estratégias mais robustas de seleção
+3. **Erros de Conexão**: Verifique se a aplicação está sendo iniciada corretamente
+
+### Depuração Local
+
+Para depurar localmente antes de enviar para a pipeline:
+
+```bash
+npx cypress open
+```
+
+Isso abrirá a interface gráfica do Cypress, permitindo executar e depurar testes interativamente.
+
+## Próximos Passos
+
+- Implementar testes de acessibilidade
+- Adicionar análise de cobertura de código aos testes E2E
+- Integrar com ferramentas de análise de performance
