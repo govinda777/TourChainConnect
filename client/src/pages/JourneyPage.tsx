@@ -224,7 +224,7 @@ export default function JourneyPage() {
             <span>Progresso</span>
             <span>{progress}%</span>
           </div>
-          <Progress value={progress} className={`h-3 bg-neutral-100`} />
+          <Progress value={progress} className={`h-3 bg-neutral-100`} data-cy="journey-progress" />
         </div>
         
         <div className="space-y-6">
@@ -261,6 +261,7 @@ export default function JourneyPage() {
             <Button 
               onClick={() => navigate("/crowdfunding")}
               className="bg-primary hover:bg-primary-dark"
+              data-cy="next-stage-button"
             >
               Continuar para Financiamento
             </Button>
@@ -273,6 +274,7 @@ export default function JourneyPage() {
               variant="outline"
               onClick={skipToFunding}
               className="text-sm"
+              data-cy="skip-to-funding-button"
             >
               Pular para Financiamento
             </Button>
