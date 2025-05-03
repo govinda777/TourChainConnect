@@ -51,6 +51,9 @@ export default function CrowdfundingPage() {
     isDynamic?: boolean;
   }
 
+  // Obter contexto blockchain
+  const { connectWallet, walletAddress: blockchainWalletAddress, isWalletConnected, isDevelopment } = useBlockchain();
+  
   // Obter email da sessionStorage se disponível
   useEffect(() => {
     const storedEmail = sessionStorage.getItem('userEmail');
@@ -59,8 +62,11 @@ export default function CrowdfundingPage() {
     }
   }, []);
   
-  // Mock data for crowdfunding campaign (em produção, seria obtido de um smart contract)
-  const campaign = {
+  // Usar o hook de crowdfunding
+  const { getCampaign, getCampaignRewards, pledge, isLoading: isLoadingCampaign, isProcessing } = useTourCrowdfunding();
+  
+  // Estado para armazenar os dados da campanha
+  const [campaign, setCampaign] = useState({
     title: "TourChain: Revolução nas Viagens Corporativas",
     description: "Ajude a construir o futuro das viagens corporativas com blockchain, bem-estar e sustentabilidade.",
     goal: 100000,
@@ -71,7 +77,55 @@ export default function CrowdfundingPage() {
     contractAddress: "0x7Da37534E347561BEfC711F1a0dCFcb70735F268",
     networkName: "Ethereum (Sepolia Testnet)",
     featuredImage: "bg-gradient-to-r from-primary to-secondary"
-  };
+  });
+  
+  // Carregar dados da campanha ao inicializar o componente
+  useEffect(() => {
+    async function loadCampaignData() {
+      try {
+        // ID da campanha fixo para demonstração
+        const campaignId = 1;
+        
+        // Obter dados da campanha do contrato
+        const campaignData = await getCampaign(campaignId);
+        
+        // Se tiver dados, atualiza o estado
+        if (campaignData) {
+          // Calcular dias restantes
+          const now = Math.floor(Date.now() / 1000);
+          const deadline = Number(campaignData.deadline);
+          const daysLeft = Math.max(0, Math.floor((deadline - now) / (24 * 60 * 60)));
+          
+          setCampaign({
+            ...campaign,
+            title: campaignData.title,
+            description: campaignData.description,
+            goal: Number(campaignData.fundingGoal) / 10**18,
+            raised: Number(campaignData.raisedAmount) / 10**18,
+            backers: campaignData.contributorsCount,
+            daysLeft,
+            contractAddress: campaignData.creator
+          });
+        }
+        
+        // Obter recompensas da campanha (não implementado nesta versão)
+        // Esta funcionalidade seria implementada em uma versão futura
+        
+      } catch (error) {
+        console.error("Erro ao carregar dados da campanha:", error);
+        toast({
+          title: "Erro ao carregar dados",
+          description: "Não foi possível obter as informações mais recentes da campanha.",
+          variant: "destructive"
+        });
+      }
+    }
+    
+    // Carregar dados apenas se não estiver em modo de desenvolvimento
+    if (!isDevelopment) {
+      loadCampaignData();
+    }
+  }, []);
 
   // Recompensa dinâmica (1 dólar para 100 tokens, aumentando 1 dólar a cada venda)
   const dynamicReward: RewardTier = {
@@ -126,8 +180,7 @@ export default function CrowdfundingPage() {
     setIsDialogOpen(true);
   };
 
-  // Conectar com carteira web3 usando o BlockchainProvider
-  const { connectWallet, walletAddress: blockchainWalletAddress, isWalletConnected } = useBlockchain();
+  // Método para conectar carteira web3
   
   // Método para conectar carteira
   const handleConnectWallet = async () => {
@@ -159,6 +212,8 @@ export default function CrowdfundingPage() {
     }
   }, [blockchainWalletAddress]);
 
+  // Não precisamos declarar novamente, já temos essas variáveis do hook acima
+  
   // Função para processar o apoio/contribuição
   const handleCompletePledge = async () => {
     // Validação básica
@@ -183,23 +238,27 @@ export default function CrowdfundingPage() {
     setIsPledgeSubmitting(true);
     
     try {
-      // Em um cenário web3 real, aqui chamaríamos funções de um smart contract
-      // Para nossa demonstração, usaremos a API que criamos com armazenamento em memória
-      
       // Verificar se é uma compra do pacote de tokens dinâmicos
       const isDynamicTokenPurchase = selectedReward === "dynamic-tokens";
       
       if (paymentTab === "crypto") {
-        // Simulação de interação com smart contract
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        // Usar o hook de crowdfunding para interagir com o contrato
+        // O número da campanha é fixo para demonstração (1)
+        const campaignId = 1;
+        const rewardId = isDynamicTokenPurchase ? 1 : Number(selectedReward?.replace(/[^\d]/g, '') || 1);
         
-        toast({
-          title: "Transação Enviada",
-          description: "Sua transação foi enviada para a rede blockchain. Aguarde a confirmação.",
-        });
+        // Chamar a função pledge do hook, que trata da interação com o smart contract
+        const success = await pledge(
+          campaignId,
+          pledgeAmount,
+          rewardId,
+          name || "Anônimo",
+          email || "",
+          "Via TourChain Web App",
+          name ? false : true // É anônimo se não tiver nome
+        );
         
-        // Simular confirmação da blockchain após alguns segundos
-        setTimeout(() => {
+        if (success) {
           // Se for uma compra de tokens dinâmicos, atualize o preço e registre a compra
           if (isDynamicTokenPurchase) {
             setTokensPurchased(prev => [...prev, {
@@ -209,23 +268,16 @@ export default function CrowdfundingPage() {
             }]);
             setTokenPrice(prev => prev + 1); // Aumenta o preço em 1 dólar
             setLastContribution("100");
-            
-            toast({
-              title: "Compra de Tokens Confirmada!",
-              description: `Você adquiriu 100 ${campaign.tokenSymbol} tokens por $${tokenPrice}! O próximo preço será $${tokenPrice + 1}.`,
-            });
           } else {
             // Definir a última contribuição para exibir no TokenBalanceDisplay
             setLastContribution(pledgeAmount);
-            
-            toast({
-              title: "Transação Confirmada",
-              description: `Você recebeu ${parseInt(pledgeAmount) * 2} ${campaign.tokenSymbol} tokens em sua carteira!`,
-            });
           }
-        }, 3000);
+          
+          // Fechar o dialog após transação bem-sucedida
+          setIsDialogOpen(false);
+        }
       } else {
-        // Para pagamento tradicional, usamos nossa API
+        // Para pagamento tradicional, mantemos a mesma implementação com API
         const response = await apiRequest("POST", "/api/pledge", {
           name,
           email,
@@ -266,12 +318,10 @@ export default function CrowdfundingPage() {
             description: `Agradecemos seu apoio de R$ ${pledgeAmount}. Você receberá mais informações por email.`,
           });
         }
+        
+        // Fechar o dialog após transação bem-sucedida
+        setIsDialogOpen(false);
       }
-      
-      // Fechar o dialog independente do método usado
-      setIsDialogOpen(false);
-      setIsPledgeSubmitting(false);
-      
     } catch (error) {
       console.error("Erro ao processar apoio:", error);
       toast({
@@ -279,6 +329,7 @@ export default function CrowdfundingPage() {
         description: "Ocorreu um erro ao processar seu apoio. Por favor, tente novamente.",
         variant: "destructive"
       });
+    } finally {
       setIsPledgeSubmitting(false);
     }
   };
