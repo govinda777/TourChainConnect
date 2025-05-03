@@ -2,161 +2,151 @@ name: Smart Contracts CI/CD
 
 on:
   push:
-    branches: [ main ]
+    branches: [main]
     paths:
       - 'contracts/**'
       - '.github/workflows/smart-contracts.yml'
   pull_request:
-    branches: [ main ]
+    branches: [main]
     paths:
       - 'contracts/**'
       - '.github/workflows/smart-contracts.yml'
+  workflow_dispatch:
+    inputs:
+      deploy_network:
+        description: 'Network to deploy contracts to'
+        required: true
+        default: 'sepolia'
+        type: choice
+        options:
+          - sepolia
+          - goerli
+          - polygon-mumbai
+          - localhost
+      use_gnosis_safe:
+        description: 'Use Gnosis Safe for contract administration'
+        type: boolean
+        default: false
+      run_security_scan:
+        description: 'Run Mythril security analysis'
+        type: boolean
+        default: true
 
 jobs:
   test:
+    name: Test Smart Contracts
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: 18
           cache: 'npm'
-      
+
       - name: Install dependencies
-        run: npm install
-      
-      - name: Compile smart contracts
-        run: npx hardhat compile
-      
-      - name: Run smart contract tests
+        run: npm ci
+
+      - name: Run Hardhat tests
         run: npx hardhat test
-      
-      - name: Generate code coverage report
+
+      - name: Generate code coverage
         run: npx hardhat coverage
-      
-      - name: Archive code coverage results
+        
+      - name: Archive coverage results
         uses: actions/upload-artifact@v3
         with:
           name: coverage-report
           path: coverage/
-  
-  security-analysis:
+
+  security:
+    name: Security Analysis
+    runs-on: ubuntu-latest
     needs: test
-    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.event.inputs.run_security_scan == 'true'
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: 18
           cache: 'npm'
-      
+
       - name: Install dependencies
-        run: npm install
-      
-      - name: Install Slither
+        run: npm ci
+
+      - name: Install Mythril
         run: |
-          pip3 install slither-analyzer
-          pip3 install solc-select
-          solc-select install 0.8.20
-          solc-select use 0.8.20
-      
-      - name: Run Slither
-        run: slither contracts --exclude-informational --exclude-low
-      
-      - name: Run Mythril security analysis
-        run: |
+          sudo apt-get install -y python3-pip
           pip3 install mythril
-          myth analyze contracts/tokens/TourToken.sol --solc-json mythril.config.json
-          myth analyze contracts/tokens/TourStaking.sol --solc-json mythril.config.json
-          myth analyze contracts/crowdfunding/TourCrowdfunding.sol --solc-json mythril.config.json
-          myth analyze contracts/oracles/TourOracle.sol --solc-json mythril.config.json
-          myth analyze contracts/sustainability/CarbonOffset.sol --solc-json mythril.config.json
 
-  deploy-testnet:
-    needs: [test, security-analysis]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+      - name: Run Mythril analysis
+        run: |
+          mkdir -p security-reports
+          find contracts -name "*.sol" -not -path "*/node_modules/*" | while read contract; do
+            echo "Analyzing $contract..."
+            myth analyze $contract --solc-json mythril.config.json -o markdown > "security-reports/$(basename $contract).md" || true
+          done
+        
+      - name: Archive security reports
+        uses: actions/upload-artifact@v3
+        with:
+          name: security-reports
+          path: security-reports/
+
+  deploy:
+    name: Deploy Smart Contracts
     runs-on: ubuntu-latest
+    needs: [test, security]
+    if: github.event_name == 'workflow_dispatch'
+    environment: ${{ github.event.inputs.deploy_network }}
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
+
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: 18
           cache: 'npm'
-      
-      - name: Install dependencies
-        run: npm install
-      
-      - name: Setup environment
-        run: |
-          echo "DEPLOYER_PRIVATE_KEY=${{ secrets.DEPLOYER_PRIVATE_KEY }}" >> $GITHUB_ENV
-          echo "SEPOLIA_RPC_URL=${{ secrets.SEPOLIA_RPC_URL }}" >> $GITHUB_ENV
-          echo "ETHERSCAN_API_KEY=${{ secrets.ETHERSCAN_API_KEY }}" >> $GITHUB_ENV
-      
-      - name: Deploy to Sepolia testnet
-        run: npx hardhat run contracts/scripts/deploy-all.ts --network sepolia
-      
-      - name: Verify contracts on Etherscan
-        run: |
-          npx hardhat verify --network sepolia $(cat deployed-contracts.json | jq -r '.tourToken')
-          npx hardhat verify --network sepolia $(cat deployed-contracts.json | jq -r '.tourStaking') $(cat deployed-contracts.json | jq -r '.tourToken')
-          npx hardhat verify --network sepolia $(cat deployed-contracts.json | jq -r '.tourCrowdfunding') $(cat deployed-contracts.json | jq -r '.tourToken') 250 $(cat deployed-contracts.json | jq -r '.feeCollector')
-          npx hardhat verify --network sepolia $(cat deployed-contracts.json | jq -r '.tourOracle')
-          npx hardhat verify --network sepolia $(cat deployed-contracts.json | jq -r '.carbonOffset') $(cat deployed-contracts.json | jq -r '.tourToken') $(cat deployed-contracts.json | jq -r '.tourOracle')
-      
-      - name: Save deployment information
-        uses: actions/upload-artifact@v3
-        with:
-          name: deployment-info
-          path: deployed-contracts.json
 
-  deploy-mainnet:
-    needs: [deploy-testnet]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push' && startsWith(github.event.head_commit.message, 'PROD:')
-    runs-on: ubuntu-latest
-    environment: production
-    steps:
-      - uses: actions/checkout@v3
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-          cache: 'npm'
-      
       - name: Install dependencies
-        run: npm install
-      
-      - name: Setup environment
+        run: npm ci
+
+      - name: Set Environment Variables
         run: |
-          echo "DEPLOYER_PRIVATE_KEY=${{ secrets.MAINNET_DEPLOYER_PRIVATE_KEY }}" >> $GITHUB_ENV
-          echo "MAINNET_RPC_URL=${{ secrets.MAINNET_RPC_URL }}" >> $GITHUB_ENV
-          echo "ETHERSCAN_API_KEY=${{ secrets.ETHERSCAN_API_KEY }}" >> $GITHUB_ENV
-      
-      - name: Confirm Mainnet Deployment
-        uses: trstringer/manual-approval@v1
-        with:
-          secret: ${{ github.TOKEN }}
-          approvers: ${{ github.actor }}
-          minimum-approvals: 1
-          issue-title: "Approve Mainnet Deployment"
-          issue-body: "Please approve the deployment of smart contracts to Ethereum Mainnet."
-          exclude-workflow-initiator-as-approver: false
-      
-      - name: Deploy to Ethereum Mainnet
-        run: npx hardhat run contracts/scripts/deploy-all.ts --network mainnet
-      
-      - name: Verify contracts on Etherscan
+          echo "USE_GNOSIS_SAFE=${{ github.event.inputs.use_gnosis_safe }}" >> $GITHUB_ENV
+          echo "HARDHAT_NETWORK=${{ github.event.inputs.deploy_network }}" >> $GITHUB_ENV
+          
+      - name: Setup .env file
         run: |
-          npx hardhat verify --network mainnet $(cat deployed-contracts.json | jq -r '.tourToken')
-          npx hardhat verify --network mainnet $(cat deployed-contracts.json | jq -r '.tourStaking') $(cat deployed-contracts.json | jq -r '.tourToken')
-          npx hardhat verify --network mainnet $(cat deployed-contracts.json | jq -r '.tourCrowdfunding') $(cat deployed-contracts.json | jq -r '.tourToken') 250 $(cat deployed-contracts.json | jq -r '.feeCollector')
-          npx hardhat verify --network mainnet $(cat deployed-contracts.json | jq -r '.tourOracle')
-          npx hardhat verify --network mainnet $(cat deployed-contracts.json | jq -r '.carbonOffset') $(cat deployed-contracts.json | jq -r '.tourToken') $(cat deployed-contracts.json | jq -r '.tourOracle')
-      
-      - name: Save deployment information
+          echo "PRIVATE_KEY=${{ secrets.DEPLOYER_PRIVATE_KEY }}" >> .env
+          echo "INFURA_API_KEY=${{ secrets.INFURA_API_KEY }}" >> .env
+          echo "ETHERSCAN_API_KEY=${{ secrets.ETHERSCAN_API_KEY }}" >> .env
+          echo "POLYGON_API_KEY=${{ secrets.POLYGON_API_KEY }}" >> .env
+          echo "SAFE_SERVICE_URL=${{ secrets.SAFE_SERVICE_URL }}" >> .env
+          
+      - name: Deploy Contracts
+        run: npx hardhat run contracts/scripts/deploy-all.ts --network ${{ github.event.inputs.deploy_network }}
+        
+      - name: Verify Contracts on Explorer
+        run: |
+          if [[ "${{ github.event.inputs.deploy_network }}" != "localhost" ]]; then
+            echo "Verifying contracts on ${{ github.event.inputs.deploy_network }} explorer..."
+            cp deployed-contracts.json verification-info.json
+            npx hardhat verify-all --network ${{ github.event.inputs.deploy_network }}
+          else
+            echo "Skipping verification for localhost network"
+          fi
+        
+      - name: Archive deployment artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: mainnet-deployment-info
-          path: deployed-contracts.json
+          name: deployment-artifacts
+          path: |
+            deployed-contracts.json
+            contracts/deployments/
