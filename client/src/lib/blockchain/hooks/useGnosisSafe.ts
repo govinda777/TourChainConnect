@@ -1,5 +1,4 @@
 import { useState, useCallback } from 'react';
-import { ethers } from 'ethers';
 import { useBlockchain } from '../providers/BlockchainProvider';
 
 export interface SafeInfo {
@@ -39,7 +38,6 @@ export interface SafeBalance {
  * Permite consultar informações do Safe, transações e saldos
  */
 export function useGnosisSafe() {
-  const { provider } = useBlockchain();
   const [isLoading, setIsLoading] = useState(false);
   
   /**
@@ -96,7 +94,7 @@ export function useGnosisSafe() {
         {
           id: 'tx1',
           to: '0xA1B5D97Edc2d198a4ae5D02512Ac3D9a208F55d9',
-          value: ethers.utils.parseEther('0.5').toString(),
+          value: '500000000000000000', // 0.5 ETH em wei
           data: '0x',
           timestamp: now - 2 * day,
           description: 'Pagamento para fornecedor de hospedagem',
@@ -110,7 +108,7 @@ export function useGnosisSafe() {
         {
           id: 'tx2',
           to: '0xB6D3d6f4b182a4F3747Dc83074AE6B4D68DBAdF1',
-          value: ethers.utils.parseEther('1.2').toString(),
+          value: '1200000000000000000', // 1.2 ETH em wei
           data: '0x',
           timestamp: now - 5 * day,
           description: 'Compra de tokens para staking',
@@ -124,7 +122,7 @@ export function useGnosisSafe() {
         {
           id: 'tx3',
           to: '0xD9BC43C9B97a736114aa3e7F0D25AA4f13d93763',
-          value: ethers.utils.parseEther('0.8').toString(),
+          value: '800000000000000000', // 0.8 ETH em wei
           data: '0x',
           timestamp: now - 12 * day,
           description: 'Reembolso de despesas de viagem',
@@ -137,7 +135,7 @@ export function useGnosisSafe() {
         {
           id: 'tx4',
           to: '0xF5DC4b45C552a98448704422Fd9f77F688F34C3B',
-          value: ethers.utils.parseEther('0.3').toString(),
+          value: '300000000000000000', // 0.3 ETH em wei
           data: '0x',
           timestamp: now - 15 * day,
           description: 'Compensação de carbono',
@@ -151,7 +149,7 @@ export function useGnosisSafe() {
         {
           id: 'tx5',
           to: '0x3A32cd67B99B4C12C7dD63c43D781997589A0C11',
-          value: ethers.utils.parseEther('0.05').toString(),
+          value: '50000000000000000', // 0.05 ETH em wei
           data: '0x',
           timestamp: now - 18 * day,
           description: 'Interação com DApp de sustentabilidade',
@@ -204,7 +202,7 @@ export function useGnosisSafe() {
             decimals: 18,
             logoUri: 'https://safe-transaction-assets.safe.global/tokens/logos/0xeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee.png',
           },
-          balance: ethers.utils.parseEther('2.5').toString(),
+          balance: '2500000000000000000', // 2.5 ETH em wei
           fiatBalance: '7500.00',
         },
         {
@@ -214,7 +212,7 @@ export function useGnosisSafe() {
             decimals: 18,
             logoUri: '',
           },
-          balance: ethers.utils.parseEther('1500').toString(),
+          balance: '1500000000000000000000', // 1500 TOUR (18 decimais)
           fiatBalance: '15000.00',
         },
         {
@@ -243,13 +241,13 @@ export function useGnosisSafe() {
     decimals: number, 
     symbol: string
   ): string => {
-    const formatted = ethers.utils.formatUnits(balance, decimals);
-    const numberValue = parseFloat(formatted);
+    const divisor = Math.pow(10, decimals);
+    const value = parseInt(balance) / divisor;
     
     // Limitar casas decimais com base no token
     const decimalPlaces = symbol === 'ETH' ? 4 : (symbol === 'USDC' ? 2 : 2);
     
-    return `${numberValue.toLocaleString('pt-BR', { 
+    return `${value.toLocaleString('pt-BR', { 
       minimumFractionDigits: decimalPlaces,
       maximumFractionDigits: decimalPlaces,
     })} ${symbol}`;

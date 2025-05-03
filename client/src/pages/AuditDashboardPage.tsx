@@ -311,7 +311,7 @@ export default function AuditDashboardPage() {
                           </span>
                         </div>
                         <div className="flex items-center">
-                          {tx.value && (
+                          {tx.value && tx.value !== '0' && (
                             <span className="font-medium mr-2">
                               {(parseInt(tx.value) / 1e18).toFixed(3)} ETH
                             </span>
@@ -391,7 +391,7 @@ export default function AuditDashboardPage() {
                           {tx.description || `Transferência para ${formatAddress(tx.to)}`}
                         </TableCell>
                         <TableCell>
-                          {tx.value ? `${(parseInt(tx.value) / 1e18).toFixed(3)} ETH` : '-'}
+                          {tx.value && tx.value !== '0' ? `${(parseInt(tx.value) / 1e18).toFixed(3)} ETH` : '-'}
                         </TableCell>
                         <TableCell>
                           {tx.confirmations.length}/{tx.confirmationsRequired}
